@@ -1,0 +1,157 @@
+---
+/**
+ * 关于我页面
+ * 展示博主个人介绍和博客说明
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { siteConfig } from '@config/site';
+---
+
+<BaseLayout
+  title="关于我"
+  description={`关于 ${siteConfig.author} 的介绍`}
+>
+  <div class="about-page">
+    <!-- 头像和基本信息 -->
+    <div class="about-header">
+      <img
+        src={siteConfig.avatar}
+        alt={siteConfig.author}
+        class="about-avatar"
+        width="120"
+        height="120"
+      />
+      <h1>{siteConfig.author}</h1>
+      <p class="about-bio">{siteConfig.bio}</p>
+    </div>
+
+    <!-- 社交链接 -->
+    <div class="about-links">
+      {
+        siteConfig.socialLinks.github && (
+          <a
+            href={siteConfig.socialLinks.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline"
+          >
+            GitHub 主页
+          </a>
+        )
+      }
+      {
+        siteConfig.socialLinks.email && (
+          <a
+            href={`mailto:${siteConfig.socialLinks.email}`}
+            class="btn btn-outline"
+          >
+            邮件联系
+          </a>
+        )
+      }
+    </div>
+
+    <!-- 博客介绍 -->
+    <section class="about-section">
+      <h2>关于这个博客</h2>
+      <p>
+        这个博客是我记录生活、学习 AI 和分享项目实战的个人空间。
+        使用的技术栈是 <strong>Astro</strong> + <strong>Markdown</strong>，
+        所有文章以文件形式存储，部署简单、维护方便。
+      </p>
+      <p>
+        博客包含四大板块：
+      </p>
+      <ul>
+        <li><strong>🌿 个人生活分享</strong> — 记录日常生活和感悟</li>
+        <li><strong>🤖 AI 相关资讯</strong> — 整理 AI 行业动态和工具更新</li>
+        <li><strong>📚 技能学习分享</strong> — 技术笔记和学习心得</li>
+        <li><strong>🚀 项目实战展示</strong> — 展示个人项目和作品</li>
+      </ul>
+      <p>
+        如果你也想拥有一个类似的博客，可以查看
+        <a href="/projects/personal-blog/">项目详情</a>。
+      </p>
+    </section>
+
+    <!-- 联系与合作 -->
+    <section class="about-section">
+      <h2>联系与合作</h2>
+      <p>
+        如果你对博客内容有任何建议，或者想交流 AI 技术和个人成长，
+        欢迎通过邮件或 GitHub 联系我。
+      </p>
+      <p>
+        也欢迎在 GitHub 上给这个博客项目点个 Star ⭐
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .about-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .about-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    object-fit: cover;
+    border: 3px solid var(--color-border-light);
+    background-color: var(--color-border-light);
+  }
+
+  .about-header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .about-bio {
+    color: var(--color-text-light);
+    line-height: 1.7;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .about-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .about-section {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .about-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--color-border-light);
+  }
+
+  .about-section p {
+    margin-bottom: 0.8rem;
+    line-height: 1.8;
+    color: var(--color-text);
+  }
+
+  .about-section ul {
+    padding-left: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .about-section li {
+    margin-bottom: 0.4rem;
+    line-height: 1.7;
+  }
+</style>

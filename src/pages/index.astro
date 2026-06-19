@@ -1,0 +1,318 @@
+---
+/**
+ * 首页
+ * 博客的入口页面，包含：
+ * - 个人介绍区域
+ * - 搜索入口
+ * - 四大核心板块入口
+ * - 最新文章
+ * - 推荐项目
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import SearchBox from '@components/SearchBox.astro';
+import { siteConfig } from '@config/site';
+import { getLatestPosts, getAllProjects } from '@utils/posts';
+
+// 获取最新文章和项目数据
+const latestPosts = await getLatestPosts(6);
+const projects = await getAllProjects();
+const featuredProjects = projects.slice(0, 3);
+
+// 四大板块导航
+const sections = [
+  {
+    title: '个人生活分享',
+    description: '记录日常生活、感悟与随记',
+    href: '/life/',
+    emoji: '🌿',
+    color: '#38a169',
+  },
+  {
+    title: 'AI 相关资讯',
+    description: 'AI 新闻动态、工具更新与行业观察',
+    href: '/ai-news/',
+    emoji: '🤖',
+    color: '#3182ce',
+  },
+  {
+    title: '技能学习分享',
+    description: '技术学习笔记、知识总结与踩坑记录',
+    href: '/skills/',
+    emoji: '📚',
+    color: '#805ad5',
+  },
+  {
+    title: '项目实战展示',
+    description: '个人项目、作品集与开发心得',
+    href: '/projects/',
+    emoji: '🚀',
+    color: '#dd6b20',
+  },
+];
+---
+
+<BaseLayout>
+  <!-- ========== 个人介绍区域 ========== -->
+  <section class="hero">
+    <div class="hero-content">
+      <!-- 头像 -->
+      <img
+        src={siteConfig.avatar}
+        alt={siteConfig.author}
+        class="hero-avatar"
+        width="100"
+        height="100"
+        loading="eager"
+      />
+
+      <h1 class="hero-title">{siteConfig.author}</h1>
+      <p class="hero-desc">{siteConfig.bio}</p>
+
+      <!-- 社交链接 -->
+      <div class="hero-links">
+        {
+          siteConfig.socialLinks.github && (
+            <a
+              href={siteConfig.socialLinks.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hero-link"
+            >
+              GitHub
+            </a>
+          )
+        }
+        {
+          siteConfig.socialLinks.email && (
+            <a
+              href={`mailto:${siteConfig.socialLinks.email}`}
+              class="hero-link"
+            >
+              邮箱联系
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 搜索区域 ========== -->
+  <section style="margin-bottom: 2.5rem;">
+    <SearchBox placeholder="搜索文章标题、分类或标签..." />
+  </section>
+
+  <!-- ========== 四大板块入口 ========== -->
+  <section style="margin-bottom: 2.5rem;">
+    <h2 class="section-title">内容板块</h2>
+    <div class="sections-grid">
+      {
+        sections.map((section) => (
+          <a href={section.href} class="section-card">
+            <span class="section-emoji">{section.emoji}</span>
+            <h3 class="section-card-title">{section.title}</h3>
+            <p class="section-card-desc">{section.description}</p>
+            <span class="section-card-arrow">进入 →</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ========== 最新文章 ========== -->
+  <section style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--spacing-lg);">
+      <h2 class="section-title" style="margin-bottom: 0; border: none;
+        padding: 0;">最新文章</h2>
+    </div>
+
+    {
+      latestPosts.length > 0 ? (
+        <div class="posts-grid">
+          {
+            latestPosts.map((post) => (
+              <PostCard
+                title={post.data.title}
+                date={post.data.date}
+                description={post.data.description}
+                cover={post.data.cover}
+                category={post.data.category}
+                tags={post.data.tags}
+                slug={post.slug}
+                collection={post.collection}
+              />
+            ))
+          }
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>还没有文章，开始写第一篇吧 ✍️</p>
+        </div>
+      )
+    }
+  </section>
+
+  <!-- ========== 推荐项目 ========== -->
+  {
+    featuredProjects.length > 0 && (
+      <section style="margin-bottom: 2.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between;
+          margin-bottom: var(--spacing-lg);">
+          <h2 class="section-title" style="margin-bottom: 0; border: none;
+            padding: 0;">精选项目</h2>
+          <a href="/projects/" class="btn btn-outline" style="font-size: 0.85rem;">
+            查看全部 →
+          </a>
+        </div>
+        <div class="posts-grid">
+          {
+            featuredProjects.map((project) => (
+              <ProjectCard
+                title={project.data.title}
+                date={project.data.date}
+                description={project.data.description}
+                cover={project.data.cover}
+                techStack={project.data.techStack}
+                demoUrl={project.data.demoUrl}
+                repoUrl={project.data.repoUrl}
+                slug={project.slug}
+              />
+            ))
+          }
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  /* ---------- 个人介绍区域 ---------- */
+  .hero {
+    text-align: center;
+    padding: 2rem 0 1.5rem;
+  }
+
+  .hero-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    object-fit: cover;
+    border: 3px solid var(--color-border-light);
+    background-color: var(--color-border-light);
+  }
+
+  .hero-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    max-width: 500px;
+    margin: 0 auto 1rem;
+    line-height: 1.7;
+  }
+
+  .hero-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+  }
+
+  .hero-link {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    color: var(--color-text-light);
+    transition: all 0.2s ease;
+  }
+
+  .hero-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  /* ---------- 四大板块 ---------- */
+  .sections-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .section-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+  }
+
+  .section-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+
+  .section-emoji {
+    font-size: 2.2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.3rem;
+  }
+
+  .section-card-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .section-card-arrow {
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  /* ---------- 文章和项目网格 ---------- */
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 900px) {
+    .sections-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 500px) {
+    .sections-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero {
+      padding: 1rem 0;
+    }
+
+    .hero-title {
+      font-size: 1.4rem;
+    }
+  }
+</style>

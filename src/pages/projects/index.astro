@@ -1,0 +1,63 @@
+---
+/**
+ * 项目展示列表页
+ * 展示 src/content/projects/ 中的所有项目
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import { getAllProjects } from '@utils/posts';
+
+const projects = await getAllProjects();
+---
+
+<BaseLayout
+  title="项目实战展示"
+  description="个人项目、作品集与开发心得"
+>
+  <!-- 页面标题 -->
+  <header style="margin-bottom: var(--spacing-xl);">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+      🚀 项目实战展示
+    </h1>
+    <p style="color: var(--color-text-light);">
+      个人实战项目、作品集与开发心得
+    </p>
+  </header>
+
+  <!-- 项目列表 -->
+  {
+    projects.length > 0 ? (
+      <div class="projects-grid">
+        {
+          projects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              date={project.data.date}
+              description={project.data.description}
+              cover={project.data.cover}
+              techStack={project.data.techStack || []}
+              demoUrl={project.data.demoUrl}
+              repoUrl={project.data.repoUrl}
+              slug={project.slug}
+            />
+          ))
+        }
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>🚀 还没有项目展示</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          在 src/content/projects/ 目录下新建 Markdown 文件即可添加项目
+        </p>
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+</style>

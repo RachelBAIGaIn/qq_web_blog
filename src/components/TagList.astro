@@ -1,0 +1,32 @@
+---
+/**
+ * 标签列表组件
+ * 渲染一组文章标签
+ *
+ * 使用方式：
+ *   <TagList tags={["HTML", "CSS", "新手教程"]} />
+ */
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<div class="tag-list">
+  {
+    tags.map((tag) => (
+      <a href={`/search/?q=${encodeURIComponent(tag)}`} class="tag">
+        {tag}
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+</style>

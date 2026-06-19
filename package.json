@@ -1,0 +1,15 @@
+{
+  "name": "personal-blog",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "一个新手友好的个人博客网站，记录生活、AI资讯、学习笔记和项目展示",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  }
+}

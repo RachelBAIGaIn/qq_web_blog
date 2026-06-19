@@ -1,0 +1,63 @@
+---
+/**
+ * 技能学习列表页
+ * 展示 src/content/skills/ 中的所有学习文章
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import { getPostsByCollection } from '@utils/posts';
+
+const posts = await getPostsByCollection('skills');
+---
+
+<BaseLayout
+  title="个人技能学习分享"
+  description="技术学习笔记、知识总结与踩坑记录"
+>
+  <!-- 页面标题 -->
+  <header style="margin-bottom: var(--spacing-xl);">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+      📚 技能学习分享
+    </h1>
+    <p style="color: var(--color-text-light);">
+      技术笔记、知识总结、踩坑记录与学习心得
+    </p>
+  </header>
+
+  <!-- 文章列表 -->
+  {
+    posts.length > 0 ? (
+      <div class="posts-grid">
+        {
+          posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              date={post.data.date}
+              description={post.data.description}
+              cover={post.data.cover}
+              category={post.data.category}
+              tags={post.data.tags}
+              slug={post.slug}
+              collection="skills"
+            />
+          ))
+        }
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>📚 还没有学习笔记</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          在 src/content/skills/ 目录下新建 Markdown 文件即可添加学习文章
+        </p>
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+</style>

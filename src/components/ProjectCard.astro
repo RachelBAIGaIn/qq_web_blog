@@ -1,0 +1,221 @@
+---
+/**
+ * 项目卡片组件
+ * 在项目列表页展示单个项目的信息：截图、名称、简介、技术栈、链接
+ *
+ * 使用方式：
+ *   <ProjectCard project={项目数据对象} />
+ */
+import { formatDate } from '@utils/formatDate';
+
+interface Props {
+  title: string;
+  date: string;
+  description?: string;
+  cover?: string;
+  techStack?: string[];
+  demoUrl?: string;
+  repoUrl?: string;
+  slug: string;
+}
+
+const {
+  title,
+  date,
+  description,
+  cover,
+  techStack = [],
+  demoUrl,
+  repoUrl,
+  slug,
+} = Astro.props;
+
+const projectUrl = `/projects/${slug}/`;
+---
+
+<article class="project-card">
+  <!-- 项目封面图 -->
+  {
+    cover && (
+      <a href={projectUrl} class="project-card-cover" aria-hidden="true" tabindex="-1">
+        <img src={cover} alt={title} loading="lazy" />
+      </a>
+    )
+  }
+
+  <!-- 项目信息 -->
+  <div class="project-card-body">
+    <h3 class="project-card-title">
+      <a href={projectUrl}>{title}</a>
+    </h3>
+
+    {
+      description && (
+        <p class="project-card-desc">{description}</p>
+      )
+    }
+
+    <!-- 技术栈标签 -->
+    {
+      techStack.length > 0 && (
+        <div class="project-card-tech">
+          {
+            techStack.map((tech) => (
+              <span class="tech-tag">{tech}</span>
+            ))
+          }
+        </div>
+      )
+    }
+
+    <!-- 项目链接 -->
+    <div class="project-card-links">
+      {
+        demoUrl && (
+          <a
+            href={demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+            style="font-size: 0.85rem; padding: 0.4rem 1rem;"
+          >
+            预览项目
+          </a>
+        )
+      }
+      {
+        repoUrl && (
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline"
+            style="font-size: 0.85rem; padding: 0.4rem 1rem;"
+          >
+            源代码
+          </a>
+        )
+      }
+      <a
+        href={projectUrl}
+        class="btn btn-outline"
+        style="font-size: 0.85rem; padding: 0.4rem 1rem;"
+      >
+        查看详情
+      </a>
+    </div>
+
+    <time class="project-card-date" datetime={date}>
+      完成于 {formatDate(date)}
+    </time>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+  }
+
+  .project-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .project-card-cover {
+    flex-shrink: 0;
+    width: 280px;
+    height: 180px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-border-light);
+  }
+
+  .project-card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .project-card:hover .project-card-cover img {
+    transform: scale(1.05);
+  }
+
+  .project-card-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-card-title a {
+    color: var(--color-text);
+  }
+
+  .project-card-title a:hover {
+    color: var(--color-primary);
+  }
+
+  .project-card-desc {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .project-card-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .tech-tag {
+    font-size: 0.78rem;
+    padding: 0.15rem 0.6rem;
+    background-color: #edf2f7;
+    color: #4a5568;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+  }
+
+  .project-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-card-date {
+    font-size: 0.8rem;
+    color: var(--color-text-lighter);
+  }
+
+  /* ---------- 手机端适配 ---------- */
+  @media (max-width: 640px) {
+    .project-card {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .project-card-cover {
+      width: 100%;
+      height: 200px;
+    }
+  }
+</style>

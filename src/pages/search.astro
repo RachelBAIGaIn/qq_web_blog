@@ -1,0 +1,84 @@
+---
+/**
+ * 搜索页面
+ * 支持通过 URL 参数 ?q=关键词 进行文章搜索
+ * 也提供搜索框供用户手动输入关键词
+ *
+ * 搜索范围：文章标题、摘要、分类、标签
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import SearchBox from '@components/SearchBox.astro';
+import { getAllPosts } from '@utils/posts';
+import { searchPosts } from '@utils/search';
+
+// 获取所有文章
+const allPosts = await getAllPosts();
+
+// 从 URL 参数获取搜索关键词
+const query = Astro.url.searchParams.get('q') || '';
+const results = query ? searchPosts(allPosts, query) : [];
+---
+
+<BaseLayout
+  title="搜索文章"
+  description="按关键词搜索博客文章"
+>
+  <header style="margin-bottom: var(--spacing-xl); text-align: center;">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+      🔍 搜索文章
+    </h1>
+    <p style="color: var(--color-text-light); margin-bottom: 1.5rem;">
+      按标题、摘要、分类或标签搜索
+    </p>
+    <SearchBox />
+  </header>
+
+  <!-- 搜索结果 -->
+  {
+    query && (
+      <section>
+        <p style="margin-bottom: var(--spacing-lg); color: var(--color-text-light);">
+          搜索「<strong>{query}</strong>」，
+          找到 <strong>{results.length}</strong> 篇文章
+        </p>
+
+        {
+          results.length > 0 ? (
+            <div class="posts-grid">
+              {
+                results.map((post) => (
+                  <PostCard
+                    title={post.data.title}
+                    date={post.data.date}
+                    description={post.data.description}
+                    cover={post.data.cover}
+                    category={post.data.category}
+                    tags={post.data.tags}
+                    slug={post.slug}
+                    collection={post.collection}
+                  />
+                ))
+              }
+            </div>
+          ) : (
+            <div class="empty-state">
+              <p>😕 没有找到匹配的文章</p>
+              <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                试试其他关键词？
+              </p>
+            </div>
+          )
+        }
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+/**
+ * 生活文章详情页
+ * URL 示例：/life/weekend-notes/
+ */
+import { getCollection } from 'astro:content';
+import PostLayout from '@layouts/PostLayout.astro';
+
+// 告诉 Astro 哪些路径需要预生成
+export async function getStaticPaths() {
+  const posts = await getCollection('life');
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<PostLayout
+  title={post.data.title}
+  date={post.data.date}
+  category={post.data.category}
+  tags={post.data.tags}
+  cover={post.data.cover}
+  collection="life"
+>
+  <Content />
+</PostLayout>

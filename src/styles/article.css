@@ -1,0 +1,248 @@
+/* ============================================================
+ * 文章正文样式
+ * 控制文章详情页的排版：标题、段落、代码块、引用等
+ *
+ * 新手修改指南：
+ * - 修改 --article-* 开头的变量调整文章排版
+ * - 每次只改一小处
+ * ============================================================ */
+
+/* ---------- 文章排版变量 ---------- */
+:root {
+  --article-line-height: 1.85;
+  --article-heading-color: #1a202c;
+  --article-code-bg: #f7fafc;
+  --article-blockquote-color: #4a5568;
+  --article-blockquote-border: #38a169;
+}
+
+/* ---------- 文章容器 ---------- */
+.article-content {
+  max-width: var(--max-width-article);
+  margin: 0 auto;
+  line-height: var(--article-line-height);
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+/* ---------- 文章标题层级 ---------- */
+.article-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--article-heading-color);
+}
+
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.8rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--article-heading-color);
+}
+
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+  color: var(--article-heading-color);
+}
+
+.article-content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- 段落 ---------- */
+.article-content p {
+  margin-bottom: 1rem;
+}
+
+/* ---------- 列表 ---------- */
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.article-content li {
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- 代码块 ---------- */
+.article-content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.15em 0.4em;
+  background-color: var(--article-code-bg);
+  border-radius: 3px;
+  color: #d63384;
+}
+
+.article-content pre {
+  margin-bottom: 1.2rem;
+  padding: var(--spacing-md);
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.article-content pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ---------- 引用块 ---------- */
+.article-content blockquote {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-left: 4px solid var(--article-blockquote-border);
+  background-color: var(--color-primary-light);
+  color: var(--article-blockquote-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.article-content blockquote p {
+  margin-bottom: 0;
+}
+
+/* ---------- 链接 ---------- */
+.article-content a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- 表格 ---------- */
+.article-content table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+
+.article-content th,
+.article-content td {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.article-content th {
+  background-color: var(--color-bg);
+  font-weight: 600;
+}
+
+/* ---------- 水平线 ---------- */
+.article-content hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------- 图片 ---------- */
+.article-content img {
+  border-radius: var(--radius-md);
+  margin: 1.2rem auto;
+}
+
+/* ---------- 重点提示块（自定义样式） ---------- */
+.article-content .tip {
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  background-color: #ebf8ff;
+  border-left: 4px solid #3182ce;
+}
+
+.article-content .tip::before {
+  content: '💡 提示：';
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.article-content .warning {
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  background-color: #fffaf0;
+  border-left: 4px solid #dd6b20;
+}
+
+.article-content .warning::before {
+  content: '⚠️ 注意：';
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- 文章目录 ---------- */
+.article-toc {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.article-toc h2 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  border: none;
+  padding: 0;
+}
+
+.article-toc ol {
+  list-style: decimal;
+  padding-left: 1.3rem;
+  margin-bottom: 0;
+}
+
+.article-toc li {
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.article-toc a {
+  color: var(--color-text-light);
+  text-decoration: none;
+}
+
+.article-toc a:hover {
+  color: var(--color-primary);
+}
+
+/* ---------- 手机端文章排版适配 ---------- */
+@media (max-width: 640px) {
+  .article-content {
+    font-size: 1rem;
+  }
+
+  .article-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .article-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .article-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .article-content pre {
+    font-size: 0.85rem;
+    padding: var(--spacing-sm);
+  }
+}

@@ -1,0 +1,73 @@
+---
+/**
+ * AI 资讯列表页
+ * 展示 src/content/ai-news/ 中的所有资讯
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import { getPostsByCollection } from '@utils/posts';
+
+const posts = await getPostsByCollection('ai-news');
+---
+
+<BaseLayout
+  title="AI 相关资讯"
+  description="AI 新闻动态、工具更新与行业观察"
+>
+  <!-- 页面标题 -->
+  <header style="margin-bottom: var(--spacing-xl);">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+      🤖 AI 相关资讯
+    </h1>
+    <p style="color: var(--color-text-light);">
+      AI 新闻动态、工具更新、模型进展与行业观察
+    </p>
+
+    <!-- 自动更新接口预留说明 -->
+    <div style="margin-top: 1rem; padding: 0.8rem 1rem;
+      background-color: #ebf8ff; border-radius: var(--radius-sm);
+      border-left: 3px solid #3182ce; font-size: 0.85rem;
+      color: #2b6cb0;">
+      💡 <strong>后期扩展提示：</strong>此处预留了自动更新接口位置。
+      将来可以接入 AI 新闻 API 或 RSS 源实现资讯自动更新。目前请手动在
+      <code>src/content/ai-news/</code> 目录下添加资讯文章。
+    </div>
+  </header>
+
+  <!-- 资讯列表 -->
+  {
+    posts.length > 0 ? (
+      <div class="posts-grid">
+        {
+          posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              date={post.data.date}
+              description={post.data.description}
+              cover={post.data.cover}
+              category={post.data.category}
+              tags={post.data.tags}
+              slug={post.slug}
+              collection="ai-news"
+            />
+          ))
+        }
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>🤖 还没有 AI 资讯</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          在 src/content/ai-news/ 目录下新建 Markdown 文件即可添加资讯
+        </p>
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+</style>

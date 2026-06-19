@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#fefcbf"/>
+  <text x="400" y="180" text-anchor="middle" fill="#d69e2e" font-size="60" font-family="sans-serif">📝</text>
+  <text x="400" y="250" text-anchor="middle" fill="#975a16" font-size="20" font-family="sans-serif">HTML 入门笔记封面图</text>
+</svg>

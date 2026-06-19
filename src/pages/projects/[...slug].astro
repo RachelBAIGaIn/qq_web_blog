@@ -1,0 +1,30 @@
+---
+/**
+ * 项目详情页
+ * URL 示例：/projects/personal-blog/
+ */
+import { getCollection } from 'astro:content';
+import PostLayout from '@layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+---
+
+<PostLayout
+  title={project.data.title}
+  date={project.data.date}
+  tags={project.data.tags}
+  cover={project.data.cover}
+  collection="projects"
+>
+  <Content />
+</PostLayout>

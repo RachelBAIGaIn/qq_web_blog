@@ -1,0 +1,78 @@
+---
+/**
+ * 搜索框组件
+ * 在搜索页和首页使用，提供文章搜索输入界面
+ *
+ * 使用方式：
+ *   <SearchBox placeholder="搜索文章..." />
+ */
+interface Props {
+  placeholder?: string;
+}
+
+const { placeholder = '输入关键词搜索文章...' } = Astro.props;
+---
+
+<div class="search-box-wrapper">
+  <form class="search-box" action="/search/" method="GET">
+    <input
+      type="search"
+      name="q"
+      class="search-input"
+      placeholder={placeholder}
+      aria-label="搜索文章"
+    />
+    <button type="submit" class="search-btn" aria-label="搜索">
+      🔍
+    </button>
+  </form>
+</div>
+
+<style>
+  .search-box-wrapper {
+    width: 100%;
+  }
+
+  .search-box {
+    display: flex;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border: 1.5px solid var(--color-border);
+    border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s ease;
+    background: var(--color-bg-card);
+    color: var(--color-text);
+  }
+
+  .search-input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-lighter);
+  }
+
+  .search-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 1.1rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .search-btn:hover {
+    background: var(--color-primary-hover);
+  }
+</style>

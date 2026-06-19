@@ -1,0 +1,154 @@
+---
+/**
+ * 文章详情页布局
+ * 为文章详情提供统一的展示框架，包含标题、元信息、正文和导航
+ */
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import TagList from '@components/TagList.astro';
+import { siteConfig } from '@config/site';
+import { formatDate, estimateReadTime } from '@utils/formatDate';
+import '@styles/global.css';
+import '@styles/article.css';
+
+interface Props {
+  title: string;
+  date: string;
+  category?: string;
+  tags?: string[];
+  cover?: string;
+  collection: string;
+}
+
+const {
+  title,
+  date,
+  category,
+  tags = [],
+  cover,
+  collection,
+} = Astro.props;
+
+// 计算阅读时间（用页面的正文内容）
+const bodyText = await Astro.slots.render('default');
+const readTime = estimateReadTime(bodyText);
+
+// 板块名称映射
+const collectionNames: Record<string, string> = {
+  life: '个人生活分享',
+  'ai-news': 'AI 相关资讯',
+  skills: '个人技能学习',
+  projects: '项目实战展示',
+};
+
+const collectionName = collectionNames[collection] || collection;
+const fullTitle = `${title} - ${siteConfig.title}`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={title} />
+    <title>{fullTitle}</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>"
+    />
+  </head>
+  <body>
+    <Header />
+
+    <main class="page-main">
+      <article class="container">
+        <!-- 返回列表链接 -->
+        <div style="margin-bottom: 1.5rem;">
+          <a href={`/${collection}/`} class="btn btn-outline" style="font-size: 0.85rem;">
+            ← 返回{collectionName}
+          </a>
+        </div>
+
+        <!-- 文章头部信息 -->
+        <header style="margin-bottom: 2rem; text-align: center;">
+          <!-- 文章封面图 -->
+          {
+            cover && (
+              <img
+                src={cover}
+                alt={title}
+                style="max-height: 360px; width: 100%; object-fit: cover;
+                  border-radius: var(--radius-lg); margin-bottom: 1.5rem;"
+              />
+            )
+          }
+
+          <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.8rem;
+            line-height: 1.4;">
+            {title}
+          </h1>
+
+          <div style="color: var(--color-text-light); font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+            <span>📅 {formatDate(date)}</span>
+            {
+              category && (
+                <span>📂 {category}</span>
+              )
+            }
+            <span>⏱ 阅读约 {readTime} 分钟</span>
+          </div>
+
+          {
+            tags.length > 0 && (
+              <div style="display: flex; justify-content: center; margin-top: 0.5rem;">
+                <TagList tags={tags} />
+              </div>
+            )
+          }
+        </header>
+
+        <!-- 文章正文 -->
+        <div class="article-content">
+          <slot />
+        </div>
+
+        <!-- 文章底部导航 -->
+        <div style="margin-top: 3rem; text-align: center;">
+          <a href={`/${collection}/`} class="btn btn-outline">
+            ← 返回{collectionName}
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <Footer />
+
+    <button
+      class="back-to-top"
+      id="backToTop"
+      aria-label="返回顶部"
+      title="返回顶部"
+    >
+      ↑
+    </button>
+  </body>
+</html>
+
+<script>
+  const btn = document.getElementById('backToTop');
+  if (btn) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    });
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script>

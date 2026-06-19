@@ -1,0 +1,68 @@
+---
+/**
+ * 404 页面
+ * 当访问者打开不存在的页面时显示
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="页面未找到"
+  description="您访问的页面不存在"
+>
+  <div class="not-found">
+    <div class="not-found-content">
+      <p class="not-found-emoji">🔍</p>
+      <h1>404</h1>
+      <p class="not-found-text">抱歉，您访问的页面不存在</p>
+      <p class="not-found-hint">
+        页面可能已被移动或删除，请检查网址是否正确
+      </p>
+      <div class="not-found-actions">
+        <a href="/" class="btn btn-primary">返回首页</a>
+        <a href="/search/" class="btn btn-outline">搜索文章</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .not-found-content {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .not-found-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .not-found h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .not-found-text {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .not-found-hint {
+    font-size: 0.9rem;
+    color: var(--color-text-lighter);
+    margin-bottom: 1.5rem;
+  }
+
+  .not-found-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+  }
+</style>

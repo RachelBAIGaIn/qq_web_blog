@@ -1,0 +1,63 @@
+---
+/**
+ * 生活分享列表页
+ * 展示 src/content/life/ 中的所有文章
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import { getPostsByCollection } from '@utils/posts';
+
+const posts = await getPostsByCollection('life');
+---
+
+<BaseLayout
+  title="个人生活分享"
+  description="记录日常生活、感悟与随记"
+>
+  <!-- 页面标题 -->
+  <header style="margin-bottom: var(--spacing-xl);">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+      🌿 个人生活分享
+    </h1>
+    <p style="color: var(--color-text-light);">
+      记录日常、感悟与生活中的小确幸
+    </p>
+  </header>
+
+  <!-- 文章列表 -->
+  {
+    posts.length > 0 ? (
+      <div class="posts-grid">
+        {
+          posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              date={post.data.date}
+              description={post.data.description}
+              cover={post.data.cover}
+              category={post.data.category}
+              tags={post.data.tags}
+              slug={post.slug}
+              collection="life"
+            />
+          ))
+        }
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>🌿 还没有生活记录</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          在 src/content/life/ 目录下新建 Markdown 文件即可添加文章
+        </p>
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+/**
+ * 底部页脚组件
+ * 显示版权信息、社交链接
+ */
+import { siteConfig } from '@config/site';
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <!-- 社交链接 -->
+    <div class="footer-social">
+      {
+        siteConfig.socialLinks.github && (
+          <a
+            href={siteConfig.socialLinks.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer-link"
+            aria-label="GitHub 主页"
+          >
+            GitHub
+          </a>
+        )
+      }
+      {
+        siteConfig.socialLinks.email && (
+          <a
+            href={`mailto:${siteConfig.socialLinks.email}`}
+            class="footer-link"
+            aria-label="发送邮件"
+          >
+            邮件联系
+          </a>
+        )
+      }
+    </div>
+
+    <!-- 版权信息 -->
+    <p class="footer-copy">
+      © {siteConfig.since} - {new Date().getFullYear()} {siteConfig.title}.
+      由 <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a> 构建
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border-light);
+    padding: var(--spacing-xl) 0;
+    background-color: var(--color-bg-card);
+  }
+
+  .footer-inner {
+    text-align: center;
+  }
+
+  .footer-social {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .footer-link {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-light);
+  }
+
+  .footer-copy {
+    font-size: 0.85rem;
+    color: var(--color-text-lighter);
+  }
+
+  .footer-copy a {
+    color: var(--color-text-light);
+  }
+
+  @media (max-width: 640px) {
+    .site-footer {
+      padding: var(--spacing-lg) 0;
+    }
+  }
+</style>
