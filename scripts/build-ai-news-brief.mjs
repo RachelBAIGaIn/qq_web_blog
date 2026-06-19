@@ -142,7 +142,19 @@ function generateMarkdown(items, briefType, dateStr) {
 
   md += '\n';
 
-  let sectionNum = 2;
+  // 二、今日值得关注（放在最前面，让读者快速了解重点）
+  md += `## 二、今日值得关注\n\n`;
+  const highlights = pickHighlights(items);
+  if (highlights.length > 0) {
+    highlights.forEach((h, i) => {
+      md += `${i + 1}. ${h}\n`;
+    });
+  } else {
+    md += '今日暂无特别值得关注的条目。\n';
+  }
+  md += '\n';
+
+  let sectionNum = 3;
   for (const rule of CATEGORY_RULES) {
     const catItems = categorized[rule.id];
     const romanNum = ['一', '二', '三', '四', '五', '六', '七'][sectionNum - 1]
@@ -167,18 +179,6 @@ function generateMarkdown(items, briefType, dateStr) {
     }
     sectionNum++;
   }
-
-  // 七、今日值得关注
-  md += `## 七、今日值得关注\n\n`;
-  const highlights = pickHighlights(items);
-  if (highlights.length > 0) {
-    highlights.forEach((h, i) => {
-      md += `${i + 1}. ${h}\n`;
-    });
-  } else {
-    md += '今日暂无特别值得关注的条目。\n';
-  }
-  md += '\n';
 
   // 来源透明区
   md += `---\n\n`;

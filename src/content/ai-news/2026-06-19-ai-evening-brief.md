@@ -19,7 +19,15 @@ status: "review"
 - 汇总截至北京时间 晚上 20:00 前最近一轮可直接核实的 AI 行业动态。
 - 本轮共采集 26 条来自一手来源的资讯。
 
-## 二、模型与产品发布
+## 二、今日值得关注
+
+1. NVIDIA发布RTX Spark AI超级芯片，面向个人PC的Blackwell架构SoC
+2. NVIDIA Vera Rubin AI平台进入全面量产，Q3 2026开始交付
+3. Microsoft Agent Framework 1.0正式GA，合并AutoGen与Semantic Kernel
+4. Agent Skills开放标准成熟：SKILL.md格式实现跨工具可移植
+5. Claude Code v2.1.170发布：Fable 5模型和动态工作流
+
+## 三、模型与产品发布
 
 - **DXC will integrate Claude into the systems banks, airlines, and other regulated industries rely on** （2026年6月19日 18:27）
   来源：[Anthropic Newsroom](https://www.anthropic.com/news/dxc-anthropic-alliance)
@@ -55,7 +63,7 @@ status: "review"
   Vercel Labs推出skills.sh，npx skills add一键安装到所有Agent。claude-skills库已收录345+技能覆盖13个Agent，含51个高级工程师角色。LobeHub Skills和SkillsMP目录提供数万条目。
   来源：[Tech Times](https://www.techtimes.com/articles/318518/20260616/ai-coding-agent-skills-library-gives-any-tool-51-senior-engineer-personas.htm)
 
-## 三、AI 芯片 / 算力硬件
+## 四、AI 芯片 / 算力硬件
 
 - **NVIDIA Vera Rubin AI平台进入全面量产，Q3 2026开始交付** （2026年6月4日 08:00）
   Vera Rubin NVL72机架集成36颗Vera CPU+72颗Rubin GPU，10倍Agent AI吞吐量，成本降至Grace Blackwell的1/10。早期客户包括Anthropic、OpenAI、xAI。
@@ -67,7 +75,7 @@ status: "review"
   Goal Mode让Codex成为持久Agent，支持跨会话断点续做。新增Appshots(macOS窗口截图)、Locked Use远程执行和Windows computer-use。
   来源：[AI Agent Store](https://aiagentstore.ai/ai-agent-news/topic/coding/2026-06-02)
 
-## 四、产业与大事件
+## 五、产业与大事件
 
 - **What we learned mapping a year’s worth of AI-enabled cyber threats** （2026年6月19日 18:27）
   来源：[Anthropic Newsroom](https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack)
@@ -84,13 +92,13 @@ status: "review"
 - **New usage analytics and updated spend controls for enterprises** （2026年6月19日 01:00）
   来源：[OpenAI News](https://openai.com/index/chatgpt-enterprise-spend-controls)
 
-## 五、开源工具链 / Agent SDK 更新
+## 六、开源工具链 / Agent SDK 更新
 
 - **Vercel开源eve Agent框架——「Agent版的Next.js」** （2026年6月19日 08:00）
   Agent视作一个目录，内置持久化、沙箱计算、工具和人工审批。AI Agent已占Vercel平台50%以上提交量(年初不到3%)。
   来源：[Open Source For You](https://www.opensourceforu.com/2026/06/vercel-open-sources-eve-amid-agentic-ai-boom/)
 
-## 六、Skills 更新 / 有趣 Skills
+## 七、Skills 更新 / 有趣 Skills
 
 - **NVIDIA开源NemoClaw Agent框架和OpenShell安全运行时** （2026年6月1日 08:00）
   NemoClaw支持多Agent编排(规划/推理/执行/委派/记忆管理)。OpenShell是与微软、Canonical和Red Hat联合开发的容器化安全运行时。
@@ -98,14 +106,6 @@ status: "review"
 - **Kaltura开源生产级AI Agent技能库** （2026年6月15日 08:00）
   Kaltura将视频平台生产环境中经过实战检验的AI技能开源，为社区提供高质量参考实现。标志着Agent Skills从实验走向企业生产。
   来源：[Open Source For You](https://www.magzter.com/stories/technology/Open-Source-For-You/KALTURA-OPEN-SOURCES-MACHINEREADABLE-AI-SKILLS)
-
-## 七、今日值得关注
-
-1. NVIDIA发布RTX Spark AI超级芯片，面向个人PC的Blackwell架构SoC
-2. NVIDIA Vera Rubin AI平台进入全面量产，Q3 2026开始交付
-3. Microsoft Agent Framework 1.0正式GA，合并AutoGen与Semantic Kernel
-4. Agent Skills开放标准成熟：SKILL.md格式实现跨工具可移植
-5. Claude Code v2.1.170发布：Fable 5模型和动态工作流
 
 ---
 
