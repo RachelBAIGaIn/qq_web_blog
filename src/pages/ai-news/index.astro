@@ -1,20 +1,46 @@
 ---
 /**
  * AI 资讯列表页
- * 展示 src/content/ai-news/ 中的所有资讯
+ * 展示最新早报/晚报横幅、今日摘要、历史资讯列表
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PostCard from '@components/PostCard.astro';
-import { getPostsByCollection } from '@utils/posts';
+import { getPostsByCollection, getDailyBriefs } from '@utils/posts';
+import { formatDate } from '@utils/formatDate';
 
 const posts = await getPostsByCollection('ai-news');
+const { latestMorning, latestEvening } = await getDailyBriefs();
+
+// 过滤出普通资讯（非日报）用于历史列表
+const regularPosts = posts.filter((p) => !p.data.isDailyBrief);
+
+// 日报状态文案
+function getBriefStatusText(brief: any): string {
+  if (!brief) { return '今日暂无新AI行业简报'; }
+  const status = brief.data.status || 'published';
+  if (status === 'draft') { return '今日AI行业简报待审核'; }
+  if (status === 'review') { return '今日AI行业简报待审核'; }
+  const typeLabel = brief.data.briefType === 'morning' ? '早报' : '晚报';
+  return `今日AI行业${typeLabel}已更新`;
+}
+
+function getBriefStatusClass(brief: any): string {
+  if (!brief) { return 'status-empty'; }
+  const status = brief.data.status || 'published';
+  if (status === 'draft' || status === 'review') { return 'status-review'; }
+  return 'status-published';
+}
+
+// 最近更新时间
+const now = new Date();
+const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 ---
 
 <BaseLayout
   title="AI 相关资讯"
-  description="AI 新闻动态、工具更新与行业观察"
+  description="AI 新闻动态、工具更新、模型进展与行业观察"
 >
-  <!-- 页面标题 -->
+  <!-- ========== 页面标题 ========== -->
   <header style="margin-bottom: var(--spacing-xl);">
     <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
       🤖 AI 相关资讯
@@ -22,52 +48,271 @@ const posts = await getPostsByCollection('ai-news');
     <p style="color: var(--color-text-light);">
       AI 新闻动态、工具更新、模型进展与行业观察
     </p>
-
-    <!-- 自动更新接口预留说明 -->
-    <div style="margin-top: 1rem; padding: 0.8rem 1rem;
-      background-color: #ebf8ff; border-radius: var(--radius-sm);
-      border-left: 3px solid #3182ce; font-size: 0.85rem;
-      color: #2b6cb0;">
-      💡 <strong>后期扩展提示：</strong>此处预留了自动更新接口位置。
-      将来可以接入 AI 新闻 API 或 RSS 源实现资讯自动更新。目前请手动在
-      <code>src/content/ai-news/</code> 目录下添加资讯文章。
-    </div>
   </header>
 
-  <!-- 资讯列表 -->
-  {
-    posts.length > 0 ? (
-      <div class="posts-grid">
+  <!-- ========== 最新日报横幅 ========== -->
+  <section style="margin-bottom: var(--spacing-xl);">
+    <h2 class="section-title">📰 今日行业简报</h2>
+    <div class="brief-grid">
+      <!-- 早报卡片 -->
+      <div class={`brief-card ${latestMorning ? 'brief-card--active' : 'brief-card--empty'}`}>
+        <div class="brief-card-header">
+          <span class="brief-card-icon">🌅</span>
+          <h3 class="brief-card-title">AI行业早报</h3>
+        </div>
         {
-          posts.map((post) => (
-            <PostCard
-              title={post.data.title}
-              date={post.data.date}
-              description={post.data.description}
-              cover={post.data.cover}
-              category={post.data.category}
-              tags={post.data.tags}
-              slug={post.slug}
-              collection="ai-news"
-            />
-          ))
+          latestMorning ? (
+            <div class="brief-card-body">
+              <p class="brief-card-date">
+                📅 {formatDate(latestMorning.data.date)}
+              </p>
+              <p class="brief-card-count">
+                📊 共 {latestMorning.data.newsCount || '?'} 条资讯
+              </p>
+              <span class={`brief-status ${getBriefStatusClass(latestMorning)}`}>
+                {getBriefStatusText(latestMorning)}
+              </span>
+              <a
+                href={`/ai-news/${latestMorning.slug}/`}
+                class="btn btn-primary brief-card-btn"
+              >
+                阅读早报 →
+              </a>
+            </div>
+          ) : (
+            <div class="brief-card-body">
+              <p class="brief-card-empty-text">今日早报尚未生成</p>
+              <p class="brief-card-hint">
+                每日 08:00 自动生成，请耐心等待
+              </p>
+              <span class="brief-status status-empty">
+                今日暂无新AI行业简报
+              </span>
+            </div>
+          )
         }
       </div>
-    ) : (
-      <div class="empty-state">
-        <p>🤖 还没有 AI 资讯</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
-          在 src/content/ai-news/ 目录下新建 Markdown 文件即可添加资讯
-        </p>
+
+      <!-- 晚报卡片 -->
+      <div class={`brief-card ${latestEvening ? 'brief-card--active' : 'brief-card--empty'}`}>
+        <div class="brief-card-header">
+          <span class="brief-card-icon">🌇</span>
+          <h3 class="brief-card-title">AI行业晚报</h3>
+        </div>
+        {
+          latestEvening ? (
+            <div class="brief-card-body">
+              <p class="brief-card-date">
+                📅 {formatDate(latestEvening.data.date)}
+              </p>
+              <p class="brief-card-count">
+                📊 共 {latestEvening.data.newsCount || '?'} 条资讯
+              </p>
+              <span class={`brief-status ${getBriefStatusClass(latestEvening)}`}>
+                {getBriefStatusText(latestEvening)}
+              </span>
+              <a
+                href={`/ai-news/${latestEvening.slug}/`}
+                class="btn btn-primary brief-card-btn"
+              >
+                阅读晚报 →
+              </a>
+            </div>
+          ) : (
+            <div class="brief-card-body">
+              <p class="brief-card-empty-text">今日晚报尚未生成</p>
+              <p class="brief-card-hint">
+                每日 20:00 自动生成，请耐心等待
+              </p>
+              <span class="brief-status status-empty">
+                今日暂无新AI行业简报
+              </span>
+            </div>
+          )
+        }
       </div>
-    )
-  }
+    </div>
+  </section>
+
+  <!-- ========== 自动更新说明 ========== -->
+  <div class="auto-update-hint">
+    <span class="auto-update-icon">🔄</span>
+    <span>
+      系统每天 <strong>08:00</strong> 和 <strong>20:00</strong> 自动采集一手 AI 行业资讯并生成简报。
+      当前为"自动生成 + 人工审核后发布"模式，确保内容准确可靠。
+    </span>
+    <span class="auto-update-time">{updateTimeHint}</span>
+  </div>
+
+  <!-- ========== 历史资讯列表 ========== -->
+  <section style="margin-top: var(--spacing-xl);">
+    <h2 class="section-title">📚 历史资讯与日报</h2>
+    {
+      posts.length > 0 ? (
+        <div class="posts-grid">
+          {
+            posts.map((post) => (
+              <PostCard
+                title={post.data.title}
+                date={post.data.date}
+                description={post.data.description}
+                cover={post.data.cover}
+                category={post.data.category}
+                tags={post.data.tags}
+                slug={post.slug}
+                collection="ai-news"
+              />
+            ))
+          }
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>🤖 还没有 AI 资讯</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+            在 src/content/ai-news/ 目录下新建 Markdown 文件即可添加资讯
+          </p>
+        </div>
+      )
+    }
+  </section>
 </BaseLayout>
 
 <style>
+  /* ---------- 日报卡片网格 ---------- */
+  .brief-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .brief-card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-xl);
+    transition: all 0.25s ease;
+  }
+
+  .brief-card--active {
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .brief-card--active:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .brief-card--empty {
+    opacity: 0.7;
+    border-left: 4px solid var(--color-border);
+  }
+
+  .brief-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .brief-card-icon {
+    font-size: 1.5rem;
+  }
+
+  .brief-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .brief-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .brief-card-date,
+  .brief-card-count {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+  }
+
+  .brief-card-empty-text {
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+  }
+
+  .brief-card-hint {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    opacity: 0.7;
+  }
+
+  .brief-card-btn {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  /* ---------- 状态标签 ---------- */
+  .brief-status {
+    display: inline-block;
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .status-published {
+    background-color: #e6fffa;
+    color: #234e52;
+  }
+
+  .status-review {
+    background-color: #fefcbf;
+    color: #744210;
+  }
+
+  .status-empty {
+    background-color: #edf2f7;
+    color: #718096;
+  }
+
+  /* ---------- 自动更新提示 ---------- */
+  .auto-update-hint {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.2rem;
+    background-color: #f0fff4;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid #38a169;
+    font-size: 0.85rem;
+    color: #276749;
+    line-height: 1.6;
+  }
+
+  .auto-update-icon {
+    font-size: 1.1rem;
+  }
+
+  .auto-update-time {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-top: 0.2rem;
+  }
+
+  /* ---------- 文章列表 ---------- */
   .posts-grid {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 700px) {
+    .brief-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

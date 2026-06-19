@@ -1,0 +1,22 @@
+version: '1.0'
+name: ai-news-daily
+displayName: AI资讯定时简报
+
+triggers:
+  schedule:
+    - cron: '0 8,20 * * ?'
+
+stages:
+  - name: build_and_publish
+    displayName: 生成并发布AI简报
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: shell@agent
+        name: generate_ai_news_brief
+        displayName: 生成 AI早报 / AI晚报
+        script:
+          - cd personal-blog
+          - npm ci
+          - node scripts/publish-ai-news-brief.mjs --mode=review

@@ -1,0 +1,144 @@
+---
+/**
+ * 新闻来源列表组件
+ * 展示新闻采集源的名称、类型和链接，增强内容透明度
+ *
+ * 使用方式：
+ *   <NewsSourceList />
+ *
+ * 组件会从 data/news-sources.json 读取启用的新闻源列表
+ */
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+
+interface NewsSource {
+  name: string;
+  type: string;
+  url: string;
+  enabled: boolean;
+  priority: number;
+  region: string;
+}
+
+let sources: NewsSource[] = [];
+
+try {
+  const sourcesPath = resolve(process.cwd(), 'data', 'news-sources.json');
+  if (existsSync(sourcesPath)) {
+    const raw = readFileSync(sourcesPath, 'utf-8');
+    sources = JSON.parse(raw).filter((s: NewsSource) => s.enabled);
+  }
+} catch {
+  // 文件不存在或解析失败时显示空列表
+}
+
+const typeLabels: Record<string, string> = {
+  rss: 'RSS',
+  page: '网页',
+  api: 'API',
+};
+---
+
+{
+  sources.length > 0 && (
+    <div class="source-list">
+      <h4 class="source-list-title">📡 新闻来源</h4>
+      <p class="source-list-desc">
+        以下来源用于生成每日AI早报和AI晚报。仅采集官方一手信息，确保内容可核实。
+      </p>
+      <ul class="source-items">
+        {
+          sources.map((source) => (
+            <li class="source-item">
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="source-link"
+              >
+                <span class="source-name">{source.name}</span>
+                <span class="source-type">
+                  {typeLabels[source.type] || source.type}
+                </span>
+                <span class="source-priority">
+                  {source.priority === 1 ? '⭐ 优先' : ''}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .source-list {
+    padding: 1.2rem;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    margin-top: var(--spacing-xl);
+  }
+
+  .source-list-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .source-list-desc {
+    font-size: 0.82rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .source-items {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .source-item {
+    display: inline-block;
+  }
+
+  .source-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+    background: #f7fafc;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-light);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: all 0.2s ease;
+  }
+
+  .source-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .source-name {
+    font-weight: 500;
+  }
+
+  .source-type {
+    font-size: 0.7rem;
+    padding: 0.05rem 0.35rem;
+    background: var(--color-border-light);
+    border-radius: 4px;
+    color: var(--color-text-light);
+  }
+
+  .source-priority {
+    font-size: 0.7rem;
+    color: #d69e2e;
+  }
+</style>

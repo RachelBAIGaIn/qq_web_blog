@@ -1,0 +1,42 @@
+[
+  {
+    "name": "OpenAI News",
+    "type": "rss",
+    "url": "https://openai.com/news/rss.xml",
+    "enabled": true,
+    "priority": 1,
+    "region": "international"
+  },
+  {
+    "name": "Anthropic Newsroom",
+    "type": "page",
+    "url": "https://www.anthropic.com/news",
+    "enabled": true,
+    "priority": 1,
+    "region": "international"
+  },
+  {
+    "name": "OpenAI Research",
+    "type": "page",
+    "url": "https://openai.com/research",
+    "enabled": true,
+    "priority": 2,
+    "region": "international"
+  },
+  {
+    "name": "Google AI Blog",
+    "type": "rss",
+    "url": "https://blog.google/technology/ai/rss/",
+    "enabled": true,
+    "priority": 2,
+    "region": "international"
+  },
+  {
+    "name": "Meta AI Blog",
+    "type": "page",
+    "url": "https://ai.meta.com/blog/",
+    "enabled": true,
+    "priority": 2,
+    "region": "international"
+  }
+]

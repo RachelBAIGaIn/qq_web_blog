@@ -105,4 +105,25 @@ export async function getAllTags() {
     .sort((a, b) => b.count - a.count);
 }
 
+/**
+ * 获取 AI 资讯中的日报（早报 / 晚报），按日期从新到旧排序
+ */
+export async function getDailyBriefs() {
+  const posts = await getCollection('ai-news');
+  const briefs = posts
+    .filter((p) => p.data.isDailyBrief === true)
+    .sort((a, b) => {
+      const dateA = new Date(a.data.date).getTime();
+      const dateB = new Date(b.data.date).getTime();
+      return dateB - dateA;
+    });
+
+  const morningBriefs = briefs.filter((b) => b.data.briefType === 'morning');
+  const eveningBriefs = briefs.filter((b) => b.data.briefType === 'evening');
+  const latestMorning = morningBriefs.length > 0 ? morningBriefs[0] : null;
+  const latestEvening = eveningBriefs.length > 0 ? eveningBriefs[0] : null;
+
+  return { briefs, morningBriefs, eveningBriefs, latestMorning, latestEvening };
+}
+
 export type { CollectionEntry };

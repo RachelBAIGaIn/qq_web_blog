@@ -1,0 +1,177 @@
+---
+/**
+ * AI 日报横幅组件
+ * 可嵌入首页或其他页面，展示最新早报/晚报入口
+ *
+ * 使用方式：
+ *   <AINewsBriefBanner morning={...} evening={...} />
+ *
+ * Props:
+ *   morning — 最新早报对象（含 data: { title, date, newsCount, status, briefType },
+ *            slug, collection）
+ *   evening — 最新晚报对象，结构同上
+ */
+import { formatDate } from '@utils/formatDate';
+
+interface Brief {
+  data: {
+    title: string;
+    date: string;
+    newsCount?: number;
+    status?: string;
+    briefType?: string;
+  };
+  slug: string;
+  collection: string;
+}
+
+interface Props {
+  morning?: Brief | null;
+  evening?: Brief | null;
+}
+
+const { morning, evening } = Astro.props;
+
+function statusText(brief?: Brief | null, type?: string): string {
+  if (!brief) { return '暂无简报'; }
+  const s = brief.data.status || 'published';
+  if (s === 'draft' || s === 'review') { return '待审核'; }
+  return '已更新';
+}
+
+function statusClass(brief?: Brief | null): string {
+  if (!brief) { return 'banner-status-empty'; }
+  const s = brief.data.status || 'published';
+  if (s === 'draft' || s === 'review') { return 'banner-status-review'; }
+  return 'banner-status-published';
+}
+
+const hasMorning = !!morning;
+const hasEvening = !!evening;
+---
+
+{
+  (hasMorning || hasEvening) && (
+    <div class="daily-brief-banner">
+      <div class="banner-header">
+        <span class="banner-title">📰 AI行业日报</span>
+      </div>
+      <div class="banner-cards">
+        {
+          hasMorning && (
+            <a
+              href={`/${morning!.collection}/${morning!.slug}/`}
+              class="banner-card"
+            >
+              <span class="banner-card-icon">🌅</span>
+              <span class="banner-card-label">早报</span>
+              <span class="banner-card-date">
+                {formatDate(morning!.data.date)}
+              </span>
+              <span class={`banner-card-status ${statusClass(morning)}`}>
+                {statusText(morning, 'morning')}
+              </span>
+            </a>
+          )
+        }
+        {
+          hasEvening && (
+            <a
+              href={`/${evening!.collection}/${evening!.slug}/`}
+              class="banner-card"
+            >
+              <span class="banner-card-icon">🌇</span>
+              <span class="banner-card-label">晚报</span>
+              <span class="banner-card-date">
+                {formatDate(evening!.data.date)}
+              </span>
+              <span class={`banner-card-status ${statusClass(evening)}`}>
+                {statusText(evening, 'evening')}
+              </span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .daily-brief-banner {
+    background: linear-gradient(135deg, #ebf8ff 0%, #f0fff4 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    padding: 0.8rem 1.2rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .banner-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .banner-cards {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .banner-card {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .banner-card:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary);
+  }
+
+  .banner-card-icon {
+    font-size: 1rem;
+  }
+
+  .banner-card-label {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .banner-card-date {
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+  }
+
+  .banner-card-status {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .banner-status-published {
+    background-color: #e6fffa;
+    color: #234e52;
+  }
+
+  .banner-status-review {
+    background-color: #fefcbf;
+    color: #744210;
+  }
+
+  .banner-status-empty {
+    background-color: #edf2f7;
+    color: #718096;
+  }
+</style>
