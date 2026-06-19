@@ -143,8 +143,11 @@ function generateMarkdown(items, briefType, dateStr) {
   const typeLabel = briefType === 'morning' ? '早报' : '晚报';
   const timeLabel = briefType === 'morning' ? '早上 08:00' : '晚上 20:00';
 
+  const d = new Date(dateStr);
+  const shortDate = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+
   let md = '';
-  md += `# AI${typeLabel}\n\n`;
+  md += `# ${shortDate} AI${typeLabel}\n\n`;
   md += `## 一、今日总览\n\n`;
   md += `- 汇总截至北京时间 ${timeLabel} 前最近一轮可直接核实的 AI 行业动态。\n`;
   md += `- 本轮共采集 ${items.length} 条来自一手来源的资讯。\n`;
@@ -253,8 +256,12 @@ function buildFrontmatter(items, briefType, dateStr) {
     if (short) { tags.push(short); }
   });
 
+  // 日期格式: 2026.6.19（无前导零）
+  const d = new Date(dateStr);
+  const shortDate = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+
   return {
-    title: `AI行业${typeLabel} | ${dateStr}`,
+    title: `${shortDate} AI行业${typeLabel}`,
     date: dateStr,
     category: typeLabelCN,
     tags,

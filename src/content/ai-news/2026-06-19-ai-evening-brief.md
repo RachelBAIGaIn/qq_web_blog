@@ -1,5 +1,5 @@
 ---
-title: "AI行业晚报 | 2026-06-19"
+title: "2026.6.19 AI行业晚报"
 date: "2026-06-19"
 category: "AI 行业晚报"
 tags: ["AI行业晚报", "Anthropic", "OpenAI", "BBC", "Yahoo Tech", "证券时报", "Microsoft DevBlogs", "SiliconANGLE", "Google ADK", "Open Source For You", "Claude Code Docs", "Taskade", "AI Agent Store", "Tech Times", "北京商报", "腾讯新闻", "东方财富", "海峡都市报", "中国信息通信研究院", "Edgen"]
@@ -12,7 +12,7 @@ newsCount: 36
 status: "review"
 ---
 
-# AI晚报
+# 2026.6.19 AI晚报
 
 ## 一、今日总览
 

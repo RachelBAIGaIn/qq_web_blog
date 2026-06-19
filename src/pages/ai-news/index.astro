@@ -9,10 +9,21 @@ import { getPostsByCollection, getDailyBriefs } from '@utils/posts';
 import { formatDate } from '@utils/formatDate';
 
 const posts = await getPostsByCollection('ai-news');
-const { latestMorning, latestEvening } = await getDailyBriefs();
+const { latestMorning, latestEvening, briefs } = await getDailyBriefs();
 
 // 过滤出普通资讯（非日报）用于历史列表
 const regularPosts = posts.filter((p) => !p.data.isDailyBrief);
+
+// 最近30天的日报
+const thirtyDaysAgo = new Date();
+thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+const recentBriefs = briefs
+  .filter((b) => new Date(b.data.date) >= thirtyDaysAgo)
+  .sort((a, b) => {
+    const da = new Date(a.data.date).getTime();
+    const db = new Date(b.data.date).getTime();
+    return db - da;
+  });
 
 // 日报状态文案
 function getBriefStatusText(brief: any): string {
@@ -143,6 +154,40 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
     </span>
     <span class="auto-update-time">{updateTimeHint}</span>
   </div>
+
+  <!-- ========== 最近30天日报列表 ========== -->
+  {
+    recentBriefs.length > 0 && (
+      <section style="margin-top: var(--spacing-xl);">
+        <h2 class="section-title">📋 最近30天日报</h2>
+        <div class="brief-list">
+          {
+            recentBriefs.map((brief) => {
+              const d = new Date(brief.data.date);
+              const shortDate = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+              const typeIcon = brief.data.briefType === 'morning' ? '🌅' : '🌇';
+              const typeLabel = brief.data.briefType === 'morning' ? '早报' : '晚报';
+              const statusLabel = (brief.data.status === 'review' || brief.data.status === 'draft')
+                ? '⏳' : '✅';
+              return (
+                <a
+                  href={`/ai-news/${brief.slug}/`}
+                  class="brief-list-item"
+                >
+                  <span class="brief-list-icon">{typeIcon}</span>
+                  <span class="brief-list-date">{shortDate}</span>
+                  <span class="brief-list-type">{typeLabel}</span>
+                  <span class="brief-list-title">{brief.data.title}</span>
+                  <span class="brief-list-count">{brief.data.newsCount || 0}条</span>
+                  <span class="brief-list-status">{statusLabel}</span>
+                </a>
+              );
+            })
+          }
+        </div>
+      </section>
+    )
+  }
 
   <!-- ========== 历史资讯列表 ========== -->
   <section style="margin-top: var(--spacing-xl);">
@@ -309,10 +354,84 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
     gap: var(--spacing-md);
   }
 
+  /* ---------- 日报列表 ---------- */
+  .brief-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .brief-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    background: var(--color-bg-card);
+    border-radius: 6px;
+    border: 1px solid var(--color-border-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .brief-list-item:hover {
+    border-color: var(--color-primary);
+    background: #f8fafc;
+  }
+
+  .brief-list-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .brief-list-date {
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    min-width: 5rem;
+  }
+
+  .brief-list-type {
+    font-weight: 600;
+    color: var(--color-text);
+    flex-shrink: 0;
+    min-width: 2.5rem;
+  }
+
+  .brief-list-title {
+    color: var(--color-text);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .brief-list-count {
+    color: var(--color-text-light);
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+
+  .brief-list-status {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+  }
+
   /* ---------- 响应式 ---------- */
   @media (max-width: 700px) {
     .brief-grid {
       grid-template-columns: 1fr;
+    }
+
+    .brief-list-item {
+      flex-wrap: wrap;
+      gap: 0.3rem 0.5rem;
+      padding: 0.6rem;
+    }
+
+    .brief-list-title {
+      white-space: normal;
+      flex: 1 1 100%;
     }
   }
 </style>
