@@ -92,10 +92,25 @@ const CATEGORY_RULES = [
       '跨工具', 'agent技能', '开源技能',
     ],
   },
+  {
+    id: 'domestic',
+    title: '国内AI行业最新状态',
+    keywords: [
+      '国内', '中国', '国产', '国产算力', '国产替代',
+      '百度', '文心', '阿里', '通义', '千问',
+      '字节', '豆包', '腾讯', '混元', '元宝',
+      '智谱', 'GLM', 'DeepSeek', 'MiniMax',
+      '科创板', '陆家嘴', '工信部', '证监会',
+      '大模型企业', 'A股', '回A', '上市指引',
+      '七部门', '自主可控', '国产芯片',
+    ],
+  },
 ];
 
-// 匹配优先级：skills 在 openSource 之前检查，避免被 "agent" 关键词抢先匹配
-const MATCH_ORDER = ['modelProduct', 'chipHardware', 'industry', 'skills', 'openSource'];
+// 匹配优先级
+const MATCH_ORDER = [
+  'domestic', 'modelProduct', 'chipHardware', 'industry', 'skills', 'openSource',
+];
 
 /**
  * 将单条新闻归类到对应栏目
@@ -157,7 +172,7 @@ function generateMarkdown(items, briefType, dateStr) {
   let sectionNum = 3;
   for (const rule of CATEGORY_RULES) {
     const catItems = categorized[rule.id];
-    const romanNum = ['一', '二', '三', '四', '五', '六', '七'][sectionNum - 1]
+    const romanNum = ['一', '二', '三', '四', '五', '六', '七', '八'][sectionNum - 1]
       || String(sectionNum);
 
     md += `## ${romanNum}、${rule.title}\n\n`;

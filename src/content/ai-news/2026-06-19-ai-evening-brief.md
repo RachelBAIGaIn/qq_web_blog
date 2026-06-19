@@ -2,13 +2,13 @@
 title: "AI行业晚报 | 2026-06-19"
 date: "2026-06-19"
 category: "AI 行业晚报"
-tags: ["AI行业晚报", "Anthropic", "OpenAI", "BBC", "Yahoo Tech", "证券时报", "Microsoft DevBlogs", "SiliconANGLE", "Google ADK", "Open Source For You", "Claude Code Docs", "Taskade", "AI Agent Store", "Tech Times"]
+tags: ["AI行业晚报", "Anthropic", "OpenAI", "BBC", "Yahoo Tech", "证券时报", "Microsoft DevBlogs", "SiliconANGLE", "Google ADK", "Open Source For You", "Claude Code Docs", "Taskade", "AI Agent Store", "Tech Times", "北京商报", "腾讯新闻", "东方财富", "海峡都市报", "中国信息通信研究院", "Edgen"]
 cover: ""
 description: "汇总截至北京时间晚上 20:00前最近一轮可直接核实的 AI 行业动态。"
 isDailyBrief: true
 briefDate: "2026-06-19"
 briefType: "evening"
-newsCount: 26
+newsCount: 36
 status: "review"
 ---
 
@@ -17,7 +17,7 @@ status: "review"
 ## 一、今日总览
 
 - 汇总截至北京时间 晚上 20:00 前最近一轮可直接核实的 AI 行业动态。
-- 本轮共采集 26 条来自一手来源的资讯。
+- 本轮共采集 36 条来自一手来源的资讯。
 
 ## 二、今日值得关注
 
@@ -107,6 +107,39 @@ status: "review"
   Kaltura将视频平台生产环境中经过实战检验的AI技能开源，为社区提供高质量参考实现。标志着Agent Skills从实验走向企业生产。
   来源：[Open Source For You](https://www.magzter.com/stories/technology/Open-Source-For-You/KALTURA-OPEN-SOURCES-MACHINEREADABLE-AI-SKILLS)
 
+## 八、国内AI行业最新状态
+
+- **证监会宣布科创板第五套标准扩容至AI大模型领域** （2026年6月17日 08:00）
+  2026陆家嘴论坛上，吴清宣布科创板第五套标准扩大至AI大模型。上交所发布上市指引，要求至少一个模型已完成上线并规模化应用，预计市值不低于40亿元。智谱、MiniMax率先受益。
+  来源：[北京商报](https://www.bbtnews.com.cn/2026/0617/596609.shtml)
+- **工信部等七部门联合发文：引导平台企业加强AI大模型和智能体创新** （2026年6月18日 08:00）
+  《促进平台经济大中小企业协同发展行动方案(2026-2028年)》印发，推动通用大模型、行业大模型和智能体创新布局，加快高端芯片、下一代操作系统研发突破。
+  来源：[腾讯新闻](https://news.qq.com/rain/a/20260618A06IIS00)
+- **DeepSeek完成首轮外部融资超500亿元，投后估值近4000亿元** （2026年6月18日 08:00）
+  DeepSeek首轮外部融资创国产大模型纪录。创始人梁文锋个人出资200亿元，腾讯、宁德时代、京东、网易、IDG资本入局。
+  来源：[东方财富](https://finance.eastmoney.com/a/202606183775263020.html)
+- **智谱发布GLM-5.2开源模型，支持1M超长上下文** （2026年6月13日 08:00）
+  GLM-5.2采用MIT开源协议，在长程推理、代码生成及Agent任务上大幅提升。同步推出ZCode 3.0智能编码Agent。国产模型在代码Agent方向逼近全球第一梯队。
+  来源：[海峡都市报](http://dzb.hxnews.com/news/kjzx/202606/18/2257603.shtml)
+- **智谱IPO辅导验收，拟科创板上市募资150亿元** （2026年6月17日 08:00）
+  智谱6月1日公告科创板上市议案，6月17日辅导状态变更为"辅导验收"。MiniMax同步推进A+H双资本平台布局。A股将迎来大模型企业上市潮。
+  来源：[北京商报](https://www.bbtnews.com.cn/2026/0617/596609.shtml)
+- **字节跳动豆包App月活破3.45亿，火山引擎大模型调用量市占49.5%** （2026年6月18日 08:00）
+  豆包App开始向C端推付费订阅。字节2026年资本开支规划1600-2000亿元，正与天数智芯讨论采购至少5万颗国产AI芯片。
+  来源：[东方财富](https://finance.eastmoney.com/a/202606183775430866.html)
+- **百度文心大模型5.1发布，AI收入首超在线营销主业** （2026年6月15日 08:00）
+  文心5.1仅用业界约6%预训练成本达领先水平。Q1 AI业务收入136亿元，占核心业务52%。发布通用智能体DuMate，提出DAA(日活智能体数)新指标。
+  来源：[中国信息通信研究院](https://cinic.org.cn/xw/cjfx/1638025.html)
+- **阿里云AI年化收入达358亿元，Qwen3.7系列发布** （2026年6月16日 08:00）
+  阿里云AI产品收入连续十个季度三位数增长，ARR达358亿元。未来三年资本开支超3800亿元加码云和智算硬件。发布Qwen3.7-Max/Plus Preview。
+  来源：[中国信息通信研究院](https://cinic.org.cn/xw/cjfx/1638025.html)
+- **美国对Anthropic出口管制，国产替代战略机遇凸显** （2026年6月12日 08:00）
+  美国政府暂停外国用户访问Fable 5/Mythos 5。券商指出"国模+国芯"自主可控迎重大机遇。此前美国已禁H20等芯片对华出口四波。国产算力景气度持续上行。
+  来源：[证券时报](https://stcn.com/article/detail/3967773.html)
+- **腾讯元宝上线行业首个高考咨询师Agent，AI制药布局加速** （2026年6月18日 08:00）
+  元宝推出"元宝高考通"。发布OpenSearch-VL和设计智能体Ardot。Q1资本开支319亿元，AI投入翻倍以上增长。全国多地建设HCC高性能AI集群。
+  来源：[Edgen](https://www.edgen.tech/zh/news/post/tencent-ai-isnt-slow-execs-say-as-long-game-faces-500b-test)
+
 ---
 
 ## 本期来源
@@ -115,7 +148,7 @@ status: "review"
 - [OpenAI News](https://openai.com/news/rss.xml) — 贡献 2 条
 - [BBC News](https://www.bbc.com/news) — 贡献 1 条
 - [Yahoo Tech](https://tech.yahoo.com/ai) — 贡献 1 条
-- [证券时报](https://stcn.com) — 贡献 1 条
+- [证券时报](https://stcn.com) — 贡献 2 条
 - [Microsoft DevBlogs](https://devblogs.microsoft.com) — 贡献 1 条
 - [SiliconANGLE](https://siliconangle.com) — 贡献 1 条
 - [Google ADK](https://github.com/google/adk-python) — 贡献 1 条
@@ -124,5 +157,11 @@ status: "review"
 - [Taskade Blog](https://www.taskade.com/blog) — 贡献 1 条
 - [AI Agent Store](https://aiagentstore.ai) — 贡献 1 条
 - [Tech Times](https://www.techtimes.com) — 贡献 1 条
+- [北京商报](https://www.bbtnews.com.cn) — 贡献 2 条
+- [腾讯新闻](https://news.qq.com) — 贡献 1 条
+- [东方财富](https://finance.eastmoney.com) — 贡献 2 条
+- [海峡都市报](http://dzb.hxnews.com) — 贡献 1 条
+- [中国信息通信研究院](https://cinic.org.cn) — 贡献 2 条
+- [Edgen](https://www.edgen.tech) — 贡献 1 条
 
 > 核查日期：2026年6月19日
