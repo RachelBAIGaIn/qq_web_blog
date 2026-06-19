@@ -3,7 +3,7 @@ title: "AI行业早报 | 2026-06-19"
 date: "2026-06-19"
 category: "AI 行业早报"
 tags: ["AI行业早报", "Anthropic", "OpenAI", "BBC", "Yahoo Tech", "证券时报", "Microsoft DevBlogs", "SiliconANGLE", "Google ADK", "Open Source For You", "Claude Code Docs", "Taskade", "AI Agent Store", "Tech Times"]
-cover: "/images/posts/ai-news/daily-brief.svg"
+cover: ""
 description: "汇总截至北京时间早上 08:00前最近一轮可直接核实的 AI 行业动态。"
 isDailyBrief: true
 briefDate: "2026-06-19"

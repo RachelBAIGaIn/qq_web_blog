@@ -243,7 +243,7 @@ function buildFrontmatter(items, briefType, dateStr) {
     date: dateStr,
     category: typeLabelCN,
     tags,
-    cover: '/images/posts/ai-news/daily-brief.svg',
+    cover: '',
     description: `汇总截至北京时间${briefType === 'morning' ? '早上 08:00' : '晚上 20:00'}前最近一轮可直接核实的 AI 行业动态。`,
     isDailyBrief: true,
     briefDate: dateStr,
