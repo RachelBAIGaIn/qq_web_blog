@@ -8,15 +8,38 @@ triggers:
 
 stages:
   - name: build_and_publish
-    displayName: 生成并发布AI简报
+    displayName: 生成简报 → 构建站点 → 部署Pages
     strategy: naturally
     trigger: auto
     executor: []
     steps:
       - step: shell@agent
         name: generate_ai_news_brief
-        displayName: 生成 AI早报 / AI晚报
+        displayName: 1. 生成 AI早报 / AI晚报
         script:
           - cd personal-blog
           - npm ci
           - node scripts/publish-ai-news-brief.mjs --mode=review
+
+      - step: shell@agent
+        name: build_astro_site
+        displayName: 2. 构建 Astro 静态站点
+        script:
+          - cd personal-blog
+          - npm run build
+
+      - step: shell@agent
+        name: deploy_to_pages
+        displayName: 3. 部署到 Gitee Pages (pages分支)
+        script:
+          - cd personal-blog
+          - cp .gitignore dist/.gitignore 2>/dev/null || true
+          - cd dist
+          - git init
+          - git config user.name "GiteeGo"
+          - git config user.email "giteego@ci.bot"
+          - git checkout -b pages
+          - git add -A
+          - git commit -m "deploy: AI简报更新 $(date '+%Y-%m-%d %H:%M')" || true
+          - git remote add origin https://${PAGES_USER}:${PAGES_TOKEN}@gitee.com/QQLeo/qq_web_blog.git
+          - git push -f origin pages

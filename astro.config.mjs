@@ -2,10 +2,12 @@ import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'url';
 
 // 博客项目 Astro 配置文件
-// 新手通常不需要修改这个文件
+const isBuild = process.env.NODE_ENV === 'production' || process.argv.includes('build');
+
 export default defineConfig({
-  // 网站部署的根路径，部署到域名根目录时使用 "/"
-  site: 'https://example.com',
+  // Gitee Pages 地址；本地开发不带子路径，构建部署时加仓库名
+  site: isBuild ? 'https://qqleo.gitee.io' : 'http://localhost:4321',
+  base: isBuild ? '/qq_web_blog' : '/',
 
   // 开发服务器配置
   devToolbar: {

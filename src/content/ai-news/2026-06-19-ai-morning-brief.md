@@ -9,7 +9,7 @@ isDailyBrief: true
 briefDate: "2026-06-19"
 briefType: "morning"
 newsCount: 36
-status: "review"
+status: "published"
 ---
 
 # 2026.6.19 AI早报
