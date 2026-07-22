@@ -1,0 +1,47 @@
+{
+  "processedUrls": [
+    "https://www.anthropic.com/news/dxc-anthropic-alliance",
+    "https://www.anthropic.com/news/claude-corps",
+    "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+    "https://www.anthropic.com/news/services-track-partner-hub",
+    "https://www.anthropic.com/news/AI-enabled-cyber-threats-mitre-attack",
+    "https://www.anthropic.com/news/announcing-our-updated-responsible-scaling-policy",
+    "https://www.anthropic.com/news/expanding-project-glasswing",
+    "https://www.anthropic.com/news/seoul-office-partnerships-korean-ai-ecosystem",
+    "https://www.anthropic.com/news/fable-mythos-access",
+    "https://www.anthropic.com/news/anthropic-public-record",
+    "https://www.anthropic.com/news/tcs-anthropic-partnership",
+    "https://openai.com/index/chatgpt-enterprise-spend-controls",
+    "https://openai.com/index/improving-health-intelligence-in-chatgpt",
+    "https://www.anthropic.com/news/hard-questions",
+    "https://www.anthropic.com/news/claude-sonnet-5",
+    "https://www.anthropic.com/news/rare-disease-research-grants",
+    "https://www.anthropic.com/news/claude-for-teachers",
+    "https://www.anthropic.com/news/canadian-ai-research",
+    "https://www.anthropic.com/news/ust-claude",
+    "https://www.anthropic.com/news/ben-bernanke",
+    "https://www.anthropic.com/news/reflect-with-claude",
+    "https://www.anthropic.com/news/alberta-government-claude-cybersecurity",
+    "https://www.anthropic.com/news/fable-safeguards-jailbreak-framework",
+    "https://openai.com/index/introducing-chatgpt-small-business-program",
+    "https://openai.com/index/hugging-face-model-evaluation-security-incident"
+  ],
+  "lastFetchTime": "2026-07-22T02:42:49.989Z",
+  "dailyBriefs": {
+    "2026-06-19-morning": {
+      "date": "2026-06-19",
+      "type": "morning",
+      "generatedAt": "2026-06-19T12:13:57.014Z"
+    },
+    "2026-06-19-evening": {
+      "date": "2026-06-19",
+      "type": "evening",
+      "generatedAt": "2026-06-19T12:13:46.123Z"
+    },
+    "2026-07-22-morning": {
+      "date": "2026-07-22",
+      "type": "morning",
+      "generatedAt": "2026-07-22T02:42:50.103Z"
+    }
+  }
+}

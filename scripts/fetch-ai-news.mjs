@@ -19,6 +19,15 @@ function loadJson(p) {
   return JSON.parse(readFileSync(p, 'utf-8'));
 }
 
+function loadJsonOrDefault(p, defaultValue) {
+  if (!existsSync(p)) { return defaultValue; }
+  try {
+    return loadJson(p);
+  } catch {
+    return defaultValue;
+  }
+}
+
 function saveJson(p, data) {
   const dir = dirname(p);
   if (!existsSync(dir)) { mkdirSync(dir, { recursive: true }); }
@@ -201,7 +210,11 @@ async function main() {
   const sources = loadJson(SOURCES_PATH).filter((s) => s.enabled);
   console.log(`📋 共 ${sources.length} 个新闻源`);
 
-  const cache = loadJson(CACHE_PATH);
+  const cache = loadJsonOrDefault(CACHE_PATH, {
+    processedUrls: [],
+    lastFetchTime: null,
+    dailyBriefs: {},
+  });
   const cutoff = cutoffTime(args.hours);
   const allItems = [];
   const processedUrls = new Set(cache.processedUrls || []);
