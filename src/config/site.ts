@@ -27,7 +27,7 @@ export const siteConfig = {
 
   // 社交链接
   socialLinks: {
-    gitee: 'https://gitee.com/QQLeo',
+    gitee: 'https://gitee.com/RachelLeo',
   },
 
   // 网站创建年份

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 基于 Astro 5 的纯静态个人博客，无数据库/后端。所有文章以 Markdown 文件管理。
 
-项目实际部署到 **Gitee Pages**（`https://qqleo.gitee.io/qq_web_blog`），通过 GiteeGo CI 流水线自动构建和部署。同时兼容 Vercel/Netlify/GitHub Pages。
+项目实际部署到 **Gitee Pages**（`https://rachelleo.gitee.io/QQ_Web_Blog`），通过 GiteeGo CI 流水线自动构建和部署。同时兼容 Vercel/Netlify/GitHub Pages。
 
 核心特色：**AI 资讯每日早报/晚报自动生成系统** — 通过 GiteeGo 定时触发，自动抓取 30+ AI 新闻源，按模板生成简报 Markdown 文件，经人工审核后发布。
 
@@ -149,9 +149,9 @@ GiteeGo 定时触发（cron: `0 8,20 * * *`），三个阶段：
 
 `astro.config.mjs` 中的关键设置：
 
-- **base 路径切换**：开发时 `/`，生产构建时 `/qq_web_blog/`（Gitee Pages 仓库名）。所有内部链接和资源路径需使用 `Astro.url` 或相对路径，否则生产环境会 404
+- **base 路径切换**：开发时 `/`，生产构建时 `/QQ_Web_Blog/`（Gitee Pages 仓库名）。所有内部链接和资源路径需使用 `Astro.url` 或相对路径，否则生产环境会 404
 - **devToolbar**：已关闭（`enabled: false`），保持页面干净
-- **site**：开发 `http://localhost:4321`，生产 `https://qqleo.gitee.io`
+- **site**：开发 `http://localhost:4321`，生产 `https://rachelleo.gitee.io`
 
 ### 路径别名
 

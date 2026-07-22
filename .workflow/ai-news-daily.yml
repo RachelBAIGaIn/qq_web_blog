@@ -34,8 +34,16 @@ stages:
         script:
           - git config user.name "GiteeGo"
           - git config user.email "giteego@ci.bot"
-          - chmod +x scripts/gitee-askpass.sh
-          - export GIT_ASKPASS="$PWD/scripts/gitee-askpass.sh"
+          - cat > /tmp/gitee-askpass.sh <<'EOF'
+          - #!/bin/sh
+          - case "$1" in
+          -   *Username*) printf '%s\n' "$PAGES_USER" ;;
+          -   *Password*) printf '%s\n' "$PAGES_TOKEN" ;;
+          -   *) printf '\n' ;;
+          - esac
+          - EOF
+          - chmod +x /tmp/gitee-askpass.sh
+          - export GIT_ASKPASS=/tmp/gitee-askpass.sh
           - export GIT_TERMINAL_PROMPT=0
           - git add src/content/ai-news/ src/data/ data/
           - git commit -m "auto: AI简报更新 $(date '+%Y-%m-%d %H:%M')" || true
@@ -55,12 +63,20 @@ stages:
         script:
           # 保留 .gitignore 防止构建产物被意外提交
           - cp .gitignore dist/.gitignore 2>/dev/null || true
+          - cat > /tmp/gitee-askpass.sh <<'EOF'
+          - #!/bin/sh
+          - case "$1" in
+          -   *Username*) printf '%s\n' "$PAGES_USER" ;;
+          -   *Password*) printf '%s\n' "$PAGES_TOKEN" ;;
+          -   *) printf '\n' ;;
+          - esac
+          - EOF
+          - chmod +x /tmp/gitee-askpass.sh
           - cd dist
           - git init
           - git config user.name "GiteeGo"
           - git config user.email "giteego@ci.bot"
-          - chmod +x ../scripts/gitee-askpass.sh
-          - export GIT_ASKPASS="$PWD/../scripts/gitee-askpass.sh"
+          - export GIT_ASKPASS=/tmp/gitee-askpass.sh
           - export GIT_TERMINAL_PROMPT=0
           - git checkout -b pages
           - git add -A
