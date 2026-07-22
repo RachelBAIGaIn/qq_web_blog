@@ -37,6 +37,16 @@ function saveJson(p, data) {
   writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+function getCurrentBranch() {
+  try {
+    return execSync('git symbolic-ref --quiet --short HEAD', {
+      cwd: ROOT, encoding: 'utf-8',
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
 function getBeijingDateParts(date = new Date()) {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: BEIJING_TZ,
@@ -218,8 +228,13 @@ async function main() {
         `git commit -m "auto: AI行业${typeLabel} ${dateStr}" --allow-empty`,
         { cwd: ROOT, encoding: 'utf-8' },
       );
-      execSync('git push', { cwd: ROOT, encoding: 'utf-8' });
-      console.log('✅ 代码已提交并推送');
+      const branch = getCurrentBranch();
+      if (!branch) {
+        console.log('ℹ️ 当前为 detached HEAD，跳过脚本内 git push，后续由流水线部署步骤处理');
+      } else {
+        execSync(`git push origin HEAD:${branch}`, { cwd: ROOT, encoding: 'utf-8' });
+        console.log('✅ 代码已提交并推送');
+      }
     } catch (err) {
       console.error('⚠️  Git 操作失败（可能无可提交内容）:', err.message);
     }
