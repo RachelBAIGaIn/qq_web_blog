@@ -18,8 +18,16 @@ stages:
     - node scripts/publish-ai-news-brief.mjs --mode=auto --type=evening
     - npm run build
     - ""
-    - chmod +x scripts/gitee-askpass.sh
-    - export GIT_ASKPASS="$PWD/scripts/gitee-askpass.sh"
+    - cat > /tmp/gitee-askpass.sh <<'EOF'
+    - '#!/bin/sh'
+    - case "$1" in
+    - '  *Username*) printf ''%s\n'' "$PAGES_USER" ;;'
+    - '  *Password*) printf ''%s\n'' "$PAGES_TOKEN" ;;'
+    - '  *) printf ''\n'' ;;'
+    - esac
+    - EOF
+    - chmod +x /tmp/gitee-askpass.sh
+    - export GIT_ASKPASS=/tmp/gitee-askpass.sh
     - export GIT_TERMINAL_PROMPT=0
     - ""
     - cp .gitignore dist/.gitignore || true
