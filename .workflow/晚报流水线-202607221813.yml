@@ -17,6 +17,11 @@ stages:
     - npm ci
     - node scripts/publish-ai-news-brief.mjs --mode=auto --type=evening
     - npm run build
+    - ""
+    - chmod +x scripts/gitee-askpass.sh
+    - export GIT_ASKPASS="$PWD/scripts/gitee-askpass.sh"
+    - export GIT_TERMINAL_PROMPT=0
+    - ""
     - cp .gitignore dist/.gitignore || true
     - cd dist
     - git init
@@ -24,9 +29,9 @@ stages:
     - git config user.email "giteego@ci.bot"
     - git checkout -b pages
     - git add -A
-    - "git commit -m \"deploy: AI evening brief $(date '+%Y-%m-%d %H:%M')\" || true"
-    - "git remote add origin https://${PAGES_USER}:${PAGES_TOKEN}@gitee.com/RachelLeo/QQ_Web_Blog.git"
-    - git push -f origin pages
+    - "git commit -m \"deploy: AI morning brief $(date '+%Y-%m-%d %H:%M')\" || true"
+    - git remote add origin https://gitee.com/RachelLeo/QQ_Web_Blog.git
+    - git push -f origin pages:pages
     artifacts:
     - name: BUILD_ARTIFACT
       path:
