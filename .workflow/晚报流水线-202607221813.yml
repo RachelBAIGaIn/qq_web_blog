@@ -1,0 +1,53 @@
+version: "1.0"
+name: 构建、部署到自有主机
+displayName: 构建、部署到自有主机
+stages:
+- name: 构建
+  displayName: 构建
+  strategy: naturally
+  trigger: auto
+  steps:
+  - step: build@nodejs
+    name: ""
+    displayName: Nodejs 构建
+    nodeVersion: 20.10.0
+    commands:
+    - set -e
+    - npm config set registry https://registry.npmmirror.com
+    - npm ci
+    - node scripts/publish-ai-news-brief.mjs --mode=auto --type=evening
+    - npm run build
+    - cp .gitignore dist/.gitignore || true
+    - cd dist
+    - git init
+    - git config user.name "GiteeGo"
+    - git config user.email "giteego@ci.bot"
+    - git checkout -b pages
+    - git add -A
+    - "git commit -m \"deploy: AI evening brief $(date '+%Y-%m-%d %H:%M')\" || true"
+    - "git remote add origin https://${PAGES_USER}:${PAGES_TOKEN}@gitee.com/RachelLeo/QQ_Web_Blog.git"
+    - git push -f origin pages
+    artifacts:
+    - name: BUILD_ARTIFACT
+      path:
+      - ./dist
+      type: .tar.gz
+    caches:
+    - "~/.npm"
+    - "~/.yarn"
+    notify: []
+    strategy:
+      retry: "0"
+      resource:
+        cpu: "2"
+        memory: "4"
+triggers:
+  trigger: auto
+  schedule:
+  - cron: '* * 20 * * ? *'
+notify: []
+strategy:
+  blocking: true
+variables:
+  PAGES_USER: RachelLeo
+  PAGES_TOKEN: d85b4a5aadbe9f479c48f17b8dec7661
