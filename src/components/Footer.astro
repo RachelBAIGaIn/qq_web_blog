@@ -11,26 +11,15 @@ import { siteConfig } from '@config/site';
     <!-- 社交链接 -->
     <div class="footer-social">
       {
-        siteConfig.socialLinks.github && (
+        siteConfig.socialLinks.gitee && (
           <a
-            href={siteConfig.socialLinks.github}
+            href={siteConfig.socialLinks.gitee}
             target="_blank"
             rel="noopener noreferrer"
             class="footer-link"
-            aria-label="GitHub 主页"
+            aria-label="Gitee 主页"
           >
-            GitHub
-          </a>
-        )
-      }
-      {
-        siteConfig.socialLinks.email && (
-          <a
-            href={`mailto:${siteConfig.socialLinks.email}`}
-            class="footer-link"
-            aria-label="发送邮件"
-          >
-            邮件联系
+            Gitee
           </a>
         )
       }

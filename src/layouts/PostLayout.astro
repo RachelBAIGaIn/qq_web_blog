@@ -11,6 +11,9 @@ import { formatDate, estimateReadTime } from '@utils/formatDate';
 import '@styles/global.css';
 import '@styles/article.css';
 
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
+
 interface Props {
   title: string;
   date: string;
@@ -64,7 +67,7 @@ const fullTitle = `${title} - ${siteConfig.title}`;
       <article class="container">
         <!-- 返回列表链接 -->
         <div style="margin-bottom: 1.5rem;">
-          <a href={`/${collection}/`} class="btn btn-outline" style="font-size: 0.85rem;">
+          <a href={`${base}${collection}/`} class="btn btn-outline" style="font-size: 0.85rem;">
             ← 返回{collectionName}
           </a>
         </div>
@@ -75,7 +78,7 @@ const fullTitle = `${title} - ${siteConfig.title}`;
           {
             cover && (
               <img
-                src={cover}
+                src={`${base}${cover.replace(/^\//, '')}`}
                 alt={title}
                 style="max-height: 360px; width: 100%; object-fit: cover;
                   border-radius: var(--radius-lg); margin-bottom: 1.5rem;"
@@ -116,7 +119,7 @@ const fullTitle = `${title} - ${siteConfig.title}`;
 
         <!-- 文章底部导航 -->
         <div style="margin-top: 3rem; text-align: center;">
-          <a href={`/${collection}/`} class="btn btn-outline">
+          <a href={`${base}${collection}/`} class="btn btn-outline">
             ← 返回{collectionName}
           </a>
         </div>

@@ -8,6 +8,9 @@ import PostCard from '@components/PostCard.astro';
 import { getPostsByCollection, getDailyBriefs } from '@utils/posts';
 import { formatDate } from '@utils/formatDate';
 
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
+
 const posts = await getPostsByCollection('ai-news');
 const { latestMorning, latestEvening, briefs } = await getDailyBriefs();
 
@@ -84,7 +87,7 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
                 {getBriefStatusText(latestMorning)}
               </span>
               <a
-                href={`/ai-news/${latestMorning.slug}/`}
+                href={`${base}ai-news/${latestMorning.slug}/`}
                 class="btn btn-primary brief-card-btn"
               >
                 阅读早报 →
@@ -123,7 +126,7 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
                 {getBriefStatusText(latestEvening)}
               </span>
               <a
-                href={`/ai-news/${latestEvening.slug}/`}
+                href={`${base}ai-news/${latestEvening.slug}/`}
                 class="btn btn-primary brief-card-btn"
               >
                 阅读晚报 →
@@ -171,7 +174,7 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
                 ? '⏳' : '✅';
               return (
                 <a
-                  href={`/ai-news/${brief.slug}/`}
+                  href={`${base}ai-news/${brief.slug}/`}
                   class="brief-list-item"
                 >
                   <span class="brief-list-icon">{typeIcon}</span>

@@ -11,24 +11,23 @@
  */
 export const siteConfig = {
   // 网站名称，会显示在浏览器标签和页面顶部
-  title: '我的个人博客',
+  title: 'Rachel Blog',
 
   // 作者名称
-  author: '博主',
+  author: 'Rachel',
 
   // 网站简介，会显示在首页和搜索引擎描述中
   description: '记录生活、学习 AI、分享项目实战。',
 
   // 个人头像路径，图片需放在 public/images/avatar/ 目录下
-  avatar: '/images/avatar/avatar.svg',
+  avatar: '/images/avatar/touxiang.png',
 
   // 个人详细介绍，显示在首页个人介绍区域
   bio: '热爱生活，专注 AI 技术与个人成长。这里是我记录日常、分享学习、展示项目的个人空间。',
 
   // 社交链接
   socialLinks: {
-    github: 'https://github.com/yourname',
-    email: 'your@email.com',
+    gitee: 'https://gitee.com/QQLeo',
   },
 
   // 网站创建年份

@@ -2,37 +2,66 @@ version: '1.0'
 name: ai-news-daily
 displayName: AI资讯定时简报
 
+# ====================== 触发规则 ======================
+# 每天北京时间 08:00（早报）和 20:00（晚报）自动执行
+# 注意：Gitee Go 的 cron 时区取决于平台设置，首次运行后需验证实际触发时间
 triggers:
   schedule:
     - cron: '0 8,20 * * ?'
 
+# ====================== 流水线阶段 ======================
 stages:
   - name: build_and_publish
-    displayName: 生成简报 → 构建站点 → 部署Pages
+    displayName: 生成简报 → 回写仓库 → 构建站点 → 部署Pages
     strategy: naturally
     trigger: auto
     executor: []
     steps:
+      # ========== 步骤 1：生成 AI 早报/晚报 ==========
       - step: shell@agent
         name: generate_ai_news_brief
-        displayName: 1. 生成 AI早报 / AI晚报
+        displayName: 1. 抓取新闻 + 生成早报/晚报
         script:
           - cd personal-blog
           - npm ci
+          # --mode=review 表示生成后状态为"待审核"，需人工审核后发布
+          # 如需全自动发布，改为 --mode=auto
           - node scripts/publish-ai-news-brief.mjs --mode=review
 
+      # ========== 步骤 2：提交简报到主分支 ==========
+      # 关键：将新生成的 Markdown 简报、缓存、元信息提交回仓库
+      # 否则下次 CI 运行时看不到历史记录，审核流程也无法在线操作
+      - step: shell@agent
+        name: commit_briefs_to_repo
+        displayName: 2. 提交简报到代码仓库（主分支）
+        script:
+          - git config user.name "GiteeGo"
+          - git config user.email "giteego@ci.bot"
+          # 提交内容：
+          #   src/content/ai-news/  — 新生成的简报 .md 文件
+          #   src/data/             — aiDailyBriefMeta.json（最新简报元信息）
+          #   data/                 — ai-news-cache.json（URL 去重缓存）+ 抓取中间产物
+          - git add personal-blog/src/content/ai-news/ personal-blog/src/data/ personal-blog/data/
+          # 无变更时不报错（例如当天简报已存在被跳过）
+          - git commit -m "auto: AI简报更新 $(date '+%Y-%m-%d %H:%M')" || true
+          # 推送到主分支（使用与部署相同的凭据，需确保 PAGES_TOKEN 有仓库写权限）
+          - git push https://${PAGES_USER}:${PAGES_TOKEN}@gitee.com/QQLeo/qq_web_blog.git HEAD
+
+      # ========== 步骤 3：构建 Astro 静态站点 ==========
       - step: shell@agent
         name: build_astro_site
-        displayName: 2. 构建 Astro 静态站点
+        displayName: 3. 构建 Astro 静态站点
         script:
           - cd personal-blog
           - npm run build
 
+      # ========== 步骤 4：部署到 Gitee Pages ==========
       - step: shell@agent
         name: deploy_to_pages
-        displayName: 3. 部署到 Gitee Pages (pages分支)
+        displayName: 4. 部署到 Gitee Pages (pages分支)
         script:
           - cd personal-blog
+          # 保留 .gitignore 防止构建产物被意外提交
           - cp .gitignore dist/.gitignore 2>/dev/null || true
           - cd dist
           - git init

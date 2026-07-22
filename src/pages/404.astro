@@ -4,6 +4,9 @@
  * 当访问者打开不存在的页面时显示
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
+
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
 ---
 
 <BaseLayout
@@ -19,8 +22,8 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         页面可能已被移动或删除，请检查网址是否正确
       </p>
       <div class="not-found-actions">
-        <a href="/" class="btn btn-primary">返回首页</a>
-        <a href="/search/" class="btn btn-outline">搜索文章</a>
+        <a href={base} class="btn btn-primary">返回首页</a>
+        <a href={`${base}search/`} class="btn btn-outline">搜索文章</a>
       </div>
     </div>
   </div>

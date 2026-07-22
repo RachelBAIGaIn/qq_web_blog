@@ -136,15 +136,15 @@ description: "简短的文章摘要。"
 
 ### Vercel（推荐新手使用）
 
-1. 把项目上传到 GitHub
-2. 打开 [Vercel](https://vercel.com)，用 GitHub 账号登录
+1. 把项目上传到 Gitee
+2. 打开 [Vercel](https://vercel.com)，用 Gitee 账号登录
 3. 选择博客项目仓库
 4. 保持默认设置，点击部署
 5. 等待部署完成，访问 Vercel 提供的网址
 
 ### 其他平台
 
-也支持部署到 Netlify、GitHub Pages 等平台。详细教程见 `个人博客方案执行文档.md`。
+也支持部署到 Netlify、Gitee Pages 等平台。详细教程见 `个人博客方案执行文档.md`。
 
 ## 🛠️ 技术栈
 

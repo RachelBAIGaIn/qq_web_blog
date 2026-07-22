@@ -5,6 +5,9 @@
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { siteConfig } from '@config/site';
+
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
 ---
 
 <BaseLayout
@@ -15,7 +18,7 @@ import { siteConfig } from '@config/site';
     <!-- 头像和基本信息 -->
     <div class="about-header">
       <img
-        src={siteConfig.avatar}
+        src={`${base}${siteConfig.avatar.replace(/^\//, '')}`}
         alt={siteConfig.author}
         class="about-avatar"
         width="120"
@@ -28,14 +31,14 @@ import { siteConfig } from '@config/site';
     <!-- 社交链接 -->
     <div class="about-links">
       {
-        siteConfig.socialLinks.github && (
+        siteConfig.socialLinks.gitee && (
           <a
-            href={siteConfig.socialLinks.github}
+            href={siteConfig.socialLinks.gitee}
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-outline"
           >
-            GitHub 主页
+            Gitee 主页
           </a>
         )
       }
@@ -70,7 +73,7 @@ import { siteConfig } from '@config/site';
       </ul>
       <p>
         如果你也想拥有一个类似的博客，可以查看
-        <a href="/projects/personal-blog/">项目详情</a>。
+        <a href={`${base}projects/personal-blog/`}>项目详情</a>。
       </p>
     </section>
 
@@ -79,10 +82,10 @@ import { siteConfig } from '@config/site';
       <h2>联系与合作</h2>
       <p>
         如果你对博客内容有任何建议，或者想交流 AI 技术和个人成长，
-        欢迎通过邮件或 GitHub 联系我。
+        欢迎通过邮件或 Gitee 联系我。
       </p>
       <p>
-        也欢迎在 GitHub 上给这个博客项目点个 Star ⭐
+        也欢迎在 Gitee 上给这个博客项目点个 Star ⭐
       </p>
     </section>
   </div>

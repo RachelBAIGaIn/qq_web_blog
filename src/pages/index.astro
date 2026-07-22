@@ -15,6 +15,9 @@ import SearchBox from '@components/SearchBox.astro';
 import { siteConfig } from '@config/site';
 import { getLatestPosts, getAllProjects } from '@utils/posts';
 
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
+
 // 获取最新文章和项目数据
 const latestPosts = await getLatestPosts(6);
 const projects = await getAllProjects();
@@ -25,28 +28,28 @@ const sections = [
   {
     title: '个人生活分享',
     description: '记录日常生活、感悟与随记',
-    href: '/life/',
+    href: `${base}life/`,
     emoji: '🌿',
     color: '#38a169',
   },
   {
     title: 'AI 相关资讯',
     description: 'AI 新闻动态、工具更新与行业观察',
-    href: '/ai-news/',
+    href: `${base}ai-news/`,
     emoji: '🤖',
     color: '#3182ce',
   },
   {
     title: '技能学习分享',
     description: '技术学习笔记、知识总结与踩坑记录',
-    href: '/skills/',
+    href: `${base}skills/`,
     emoji: '📚',
     color: '#805ad5',
   },
   {
     title: '项目实战展示',
     description: '个人项目、作品集与开发心得',
-    href: '/projects/',
+    href: `${base}projects/`,
     emoji: '🚀',
     color: '#dd6b20',
   },
@@ -59,7 +62,7 @@ const sections = [
     <div class="hero-content">
       <!-- 头像 -->
       <img
-        src={siteConfig.avatar}
+        src={`${base}${siteConfig.avatar.replace(/^\//, '')}`}
         alt={siteConfig.author}
         class="hero-avatar"
         width="100"
@@ -73,24 +76,14 @@ const sections = [
       <!-- 社交链接 -->
       <div class="hero-links">
         {
-          siteConfig.socialLinks.github && (
+          siteConfig.socialLinks.gitee && (
             <a
-              href={siteConfig.socialLinks.github}
+              href={siteConfig.socialLinks.gitee}
               target="_blank"
               rel="noopener noreferrer"
               class="hero-link"
             >
-              GitHub
-            </a>
-          )
-        }
-        {
-          siteConfig.socialLinks.email && (
-            <a
-              href={`mailto:${siteConfig.socialLinks.email}`}
-              class="hero-link"
-            >
-              邮箱联系
+              Gitee
             </a>
           )
         }
@@ -162,7 +155,7 @@ const sections = [
           margin-bottom: var(--spacing-lg);">
           <h2 class="section-title" style="margin-bottom: 0; border: none;
             padding: 0;">精选项目</h2>
-          <a href="/projects/" class="btn btn-outline" style="font-size: 0.85rem;">
+          <a href={`${base}projects/`} class="btn btn-outline" style="font-size: 0.85rem;">
             查看全部 →
           </a>
         </div>

@@ -11,10 +11,12 @@ interface Props {
 }
 
 const { placeholder = '输入关键词搜索文章...' } = Astro.props;
+// base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
 ---
 
 <div class="search-box-wrapper">
-  <form class="search-box" action="/search/" method="GET">
+  <form class="search-box" action={`${base}search/`} method="GET">
     <input
       type="search"
       name="q"
