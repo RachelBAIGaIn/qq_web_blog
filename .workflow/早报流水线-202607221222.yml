@@ -50,4 +50,4 @@ strategy:
   blocking: true
 variables:
   PAGES_USER: RachelLeo
-  PAGES_TOKEN: d85b4a5aadbe9f479c48f17b8dec7661
+  PAGES_TOKEN: a4268b70a5d719acfb1d818460e4f6c5
