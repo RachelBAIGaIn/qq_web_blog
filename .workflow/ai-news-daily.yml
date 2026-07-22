@@ -34,6 +34,8 @@ stages:
         script:
           - git config user.name "GiteeGo"
           - git config user.email "giteego@ci.bot"
+          - export PAGES_USER="${PAGES_USER:-QQLeo}"
+          - test -n "$PAGES_TOKEN" || (echo "ERROR: 请在 Gitee Go 流水线变量中配置 PAGES_TOKEN" && exit 1)
           - cat > /tmp/gitee-askpass.sh <<'EOF'
           - #!/bin/sh
           - case "$1" in
@@ -63,6 +65,8 @@ stages:
         script:
           # 保留 .gitignore 防止构建产物被意外提交
           - cp .gitignore dist/.gitignore 2>/dev/null || true
+          - export PAGES_USER="${PAGES_USER:-QQLeo}"
+          - test -n "$PAGES_TOKEN" || (echo "ERROR: 请在 Gitee Go 流水线变量中配置 PAGES_TOKEN" && exit 1)
           - cat > /tmp/gitee-askpass.sh <<'EOF'
           - #!/bin/sh
           - case "$1" in

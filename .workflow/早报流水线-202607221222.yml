@@ -18,6 +18,8 @@ stages:
     - node scripts/publish-ai-news-brief.mjs --mode=auto --type=morning
     - npm run build
     - ""
+    - export PAGES_USER="${PAGES_USER:-QQLeo}"
+    - test -n "$PAGES_TOKEN" || (echo "ERROR: 请在 Gitee Go 流水线变量中配置 PAGES_TOKEN" && exit 1)
     - cat > /tmp/gitee-askpass.sh <<'EOF'
     - '#!/bin/sh'
     - case "$1" in
@@ -61,6 +63,3 @@ triggers:
 notify: []
 strategy:
   blocking: true
-variables:
-  PAGES_USER: QQLeo
-  PAGES_TOKEN: ""

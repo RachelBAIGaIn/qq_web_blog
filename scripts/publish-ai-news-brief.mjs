@@ -205,6 +205,12 @@ async function main() {
   if (args.mode === 'auto') {
     console.log('\n🔄 尝试提交代码并触发部署...');
     try {
+      execSync('git config user.name "GiteeGo"', {
+        cwd: ROOT, encoding: 'utf-8',
+      });
+      execSync('git config user.email "giteego@ci.bot"', {
+        cwd: ROOT, encoding: 'utf-8',
+      });
       execSync('git add src/content/ai-news/ src/data/aiDailyBriefMeta.json', {
         cwd: ROOT, encoding: 'utf-8',
       });
