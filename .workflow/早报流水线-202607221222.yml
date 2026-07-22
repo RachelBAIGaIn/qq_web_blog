@@ -38,7 +38,7 @@ stages:
     - git checkout -b pages
     - git add -A
     - "git commit -m \"deploy: AI morning brief $(date '+%Y-%m-%d %H:%M')\" || true"
-    - git remote add origin https://gitee.com/RachelLeo/QQ_Web_Blog.git
+    - git remote add origin https://gitee.com/QQLeo/qq_web_blog.git
     - git push -f origin pages:pages
     artifacts:
     - name: BUILD_ARTIFACT
@@ -62,5 +62,5 @@ notify: []
 strategy:
   blocking: true
 variables:
-  PAGES_USER: RachelLeo
+  PAGES_USER: QQLeo
   PAGES_TOKEN: a4268b70a5d719acfb1d818460e4f6c5
