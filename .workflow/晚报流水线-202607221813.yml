@@ -37,7 +37,7 @@ stages:
     - git config user.email "giteego@ci.bot"
     - git checkout -b pages
     - git add -A
-    - "git commit -m \"deploy: AI morning brief $(date '+%Y-%m-%d %H:%M')\" || true"
+    - "git commit -m \"deploy: AI evening brief $(date '+%Y-%m-%d %H:%M')\" || true"
     - git remote add origin https://gitee.com/QQLeo/qq_web_blog.git
     - git push -f origin pages:pages
     artifacts:
@@ -63,4 +63,4 @@ strategy:
   blocking: true
 variables:
   PAGES_USER: QQLeo
-  PAGES_TOKEN: a4268b70a5d719acfb1d818460e4f6c5
+  PAGES_TOKEN: ""

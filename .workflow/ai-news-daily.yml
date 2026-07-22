@@ -47,7 +47,7 @@ stages:
           - export GIT_TERMINAL_PROMPT=0
           - git add src/content/ai-news/ src/data/ data/
           - git commit -m "auto: AI简报更新 $(date '+%Y-%m-%d %H:%M')" || true
-          - git push https://gitee.com/RachelLeo/QQ_Web_Blog.git HEAD:master
+          - git push https://gitee.com/QQLeo/qq_web_blog.git HEAD:master
 
       # 步骤 3：构建 Astro 静态站点
       - step: shell@agent
@@ -81,5 +81,5 @@ stages:
           - git checkout -b pages
           - git add -A
           - git commit -m "deploy: AI简报更新 $(date '+%Y-%m-%d %H:%M')" || true
-          - git remote add origin https://gitee.com/RachelLeo/QQ_Web_Blog.git
+          - git remote add origin https://gitee.com/QQLeo/qq_web_blog.git
           - git push -f origin pages:pages

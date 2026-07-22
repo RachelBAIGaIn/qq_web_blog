@@ -14,6 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const SOURCES_PATH = resolve(ROOT, 'data', 'news-sources.json');
 const CACHE_PATH = resolve(ROOT, 'data', 'ai-news-cache.json');
+const BEIJING_TZ = 'Asia/Shanghai';
 
 function loadJson(p) {
   return JSON.parse(readFileSync(p, 'utf-8'));
@@ -34,6 +35,29 @@ function saveJson(p, data) {
   writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+function getBeijingDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BEIJING_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date)
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value]),
+  );
+  return parts;
+}
+
+function beijingNow() {
+  const parts = getBeijingDateParts();
+  return new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:00+08:00`);
+}
+
 function parseArgs() {
   const args = {
     hours: 24,
@@ -47,12 +71,12 @@ function parseArgs() {
 }
 
 function todaySlug() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parts = getBeijingDateParts();
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 function cutoffTime(hours) {
-  const d = new Date();
+  const d = beijingNow();
   d.setHours(d.getHours() - hours);
   return d;
 }

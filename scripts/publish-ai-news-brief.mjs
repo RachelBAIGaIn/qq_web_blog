@@ -23,6 +23,7 @@ const ROOT = resolve(__dirname, '..');
 const CONTENT_DIR = resolve(ROOT, 'src', 'content', 'ai-news');
 const META_PATH = resolve(ROOT, 'src', 'data', 'aiDailyBriefMeta.json');
 const CACHE_PATH = resolve(ROOT, 'data', 'ai-news-cache.json');
+const BEIJING_TZ = 'Asia/Shanghai';
 
 // ===================== 工具函数 =====================
 
@@ -36,9 +37,27 @@ function saveJson(p, data) {
   writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+function getBeijingDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BEIJING_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date)
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value]),
+  );
+  return parts;
+}
+
 function todaySlug() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parts = getBeijingDateParts();
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 function parseArgs() {
@@ -48,8 +67,8 @@ function parseArgs() {
     if (arg.startsWith('--type=')) { args.type = arg.split('=')[1]; }
   });
   if (!args.type || !['morning', 'evening'].includes(args.type)) {
-    const hour = new Date().getHours();
-    args.type = hour < 14 ? 'morning' : 'evening';
+    const { hour } = getBeijingDateParts();
+    args.type = Number(hour) < 14 ? 'morning' : 'evening';
   }
   return args;
 }
