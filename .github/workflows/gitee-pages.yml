@@ -1,0 +1,58 @@
+name: Deploy Gitee Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * *' # 北京时间每天 06:00
+    - cron: '0 10 * * *' # 北京时间每天 18:00
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate AI brief
+        run: node scripts/publish-ai-news-brief.mjs --mode=auto
+
+      - name: Build site
+        run: npm run build
+
+      - name: Push dist to Gitee pages branch
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s" "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+
+          cd dist
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b pages
+          git add -A
+          git commit -m "deploy: $(date '+%Y-%m-%d %H:%M:%S')" || true
+          git remote add origin git@gitee.com:QQLeo/qq_web_blog.git
+          git push -f origin pages:pages
+
+      - name: Trigger Gitee Pages rebuild
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          gitee-username: QQLeo
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          gitee-repo: QQLeo/qq_web_blog
+          branch: pages
