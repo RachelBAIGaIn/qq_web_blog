@@ -51,6 +51,7 @@ jobs:
           git -c http.extraHeader="$AUTH_HEADER" push -f https://gitee.com/QQLeo/qq_web_blog.git pages:pages
 
       - name: Trigger Gitee Pages rebuild
+        continue-on-error: true
         uses: yanglbme/gitee-pages-action@main
         with:
           gitee-username: QQLeo
