@@ -1,22 +1,17 @@
 ---
 /**
  * AI 资讯列表页
- * 展示最新早报/晚报、日报归档和普通 AI 资讯
+ * 展示最新早报/晚报和日报归档
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
-import PostCard from '@components/PostCard.astro';
 import AINewsBriefBanner from '@components/AINewsBriefBanner.astro';
-import { getPostsByCollection, getDailyBriefs } from '@utils/posts';
+import { getDailyBriefs } from '@utils/posts';
 import { formatDate } from '@utils/formatDate';
 
 // base 路径：开发时为 /，Gitee Pages 部署时为 /qq_web_blog/
 const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
 
-const posts = await getPostsByCollection('ai-news');
 const { latestMorning, latestEvening, briefs } = await getDailyBriefs();
-
-// 过滤出普通资讯（非日报）用于历史列表
-const regularPosts = posts.filter((p) => !p.data.isDailyBrief);
 
 // 最近30天的日报
 const thirtyDaysAgo = new Date();
@@ -74,7 +69,6 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
       </p>
       <div class="news-hero__meta">
         <span>今日简报 {briefs.length} 期</span>
-        <span>普通资讯 {regularPosts.length} 条</span>
         <span>{updateTimeHint}</span>
       </div>
     </div>
@@ -142,39 +136,6 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
     )
   }
 
-  <section class="section-block">
-    <div class="section-block__head">
-      <h2 class="section-title">普通 AI 资讯</h2>
-      <p class="section-block__sub">保留其他 AI 相关内容与项目动态。</p>
-    </div>
-    {
-      regularPosts.length > 0 ? (
-        <div class="posts-grid">
-          {
-            regularPosts.map((post) => (
-              <PostCard
-                title={post.data.title}
-                date={post.data.date}
-                description={post.data.description}
-                cover={post.data.cover}
-                category={post.data.category}
-                tags={post.data.tags}
-                slug={post.slug}
-                collection="ai-news"
-              />
-            ))
-          }
-        </div>
-      ) : (
-        <div class="empty-state">
-          <p>🤖 还没有 AI 资讯</p>
-          <p style="font-size: 0.9rem; margin-top: 0.5rem;">
-            在 src/content/ai-news/ 目录下新建 Markdown 文件即可添加资讯
-          </p>
-        </div>
-      )
-    }
-  </section>
 </BaseLayout>
 
 <style>
@@ -358,12 +319,6 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
   .status-empty {
     background-color: #edf2f7;
     color: #718096;
-  }
-
-  .posts-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
   }
 
   @media (max-width: 860px) {

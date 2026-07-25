@@ -2,6 +2,7 @@
  * AI 早报 / 晚报生成脚本
  *
  * 读取已抓取的新闻数据，按统一模板生成 Markdown 简报文件。
+ * 每条新闻生成中文摘要，参考 aibase.com 日报格式。
  *
  * 用法：
  *   node scripts/build-ai-news-brief.mjs [--type=morning|evening] [--input=data/news.json]
@@ -148,6 +149,176 @@ function categorizeNews(item) {
   return 'industry'; // 默认归入产业动态
 }
 
+// ===================== 中文摘要生成 =====================
+
+// 完整句子/短语匹配表（模块级常量，避免每次调用重新创建）
+const PHRASE_MAP = [
+    // --- Anthropic 新闻 ---
+    [/Introducing Claude Sonnet 5\s*Sonnet 5 delivers/i,
+      'Claude Sonnet 5 正式发布，在编程、Agent 和专业工作任务上提供前沿性能。'],
+    [/Introducing Claude for Teachers/i,
+      'Anthropic 推出 Claude for Teachers，为教育工作者提供专属 AI 助手。'],
+    [/Introducing Claude Corps/i,
+      'Anthropic 推出 Claude Corps，面向团队协作的 AI 解决方案。'],
+    [/Introducing the Services Track and Partner Hub/i,
+      'Claude 合作伙伴网络新增 Services Track 和 Partner Hub，扩大企业服务生态。'],
+    [/Introducing a way to reflect on how you use Claude/i,
+      'Anthropic 推出 Claude 使用回顾功能，帮助用户反思和优化 AI 使用方式。'],
+    [/Introducing the ChatGPT for small business program/i,
+      'OpenAI 推出 ChatGPT 中小企业计划，提供专属 AI 服务方案。'],
+    [/Claude Fable 5 and Claude Mythos 5/i,
+      'Anthropic 发布 Claude Fable 5 和 Mythos 5 模型，性能大幅提升。'],
+    [/Results from the first Anthropic Public Record/i,
+      'Anthropic 公布首期公共记录结果，增强 AI 安全透明度。'],
+    [/Responsible Scaling Policy/i,
+      'Anthropic 更新负责任扩展政策（RSP），强化 AI 安全治理框架。'],
+    [/Expanding Project Glasswing/i,
+      'Anthropic 扩展 Project Glasswing 项目，覆盖更多国家和组织。'],
+    [/Anthropic opens Seoul office/i,
+      'Anthropic 开设首尔办公室，拓展韩国 AI 生态合作。'],
+    [/Statement on the US government directive/i,
+      '美国政府指令暂停部分模型访问权限，Anthropic 发表声明回应。'],
+    [/Inviting hard questions/i,
+      'Anthropic 向公众征集关于 AI 的"最难题"，承诺公开研究过程。'],
+    [/Apply for Anthropic.*rare disease research grants/i,
+      'Anthropic 开放 AI for Science 罕见病研究资助申请。'],
+    [/Anthropic commits.*Canadian AI research/i,
+      'Anthropic 承诺向加拿大 AI 研究投入资金，支持前沿探索。'],
+    [/Ben Bernanke appointed to Anthropic/i,
+      '前美联储主席 Ben Bernanke 加入 Anthropic 长期利益信托。'],
+    [/More details on Fable 5.*cyber safeguards/i,
+      'Anthropic 公开 Fable 5 网络安全防护和越狱防御框架详情。'],
+
+    // --- OpenAI 新闻 ---
+    [/Improving health intelligence in ChatGPT/i,
+      'ChatGPT 健康智能功能改进，提升医疗场景 AI 应用能力。'],
+    [/OpenAI and Hugging Face partner/i,
+      'OpenAI 与 Hugging Face 合作处理模型评测期间的安全事件。'],
+    [/New usage analytics and updated spend controls/i,
+      'ChatGPT 企业版新增用量分析和消费管控功能。'],
+
+    // --- 通用 AI 新闻 ---
+    [/DXC will integrate Claude into.*regulated industries/i,
+      'DXC 将 Claude 集成到银行、航空等受监管行业的关键系统中。'],
+    [/TCS and Anthropic partner to bring Claude/i,
+      'TCS 与 Anthropic 合作，将 Claude 引入受监管行业。'],
+    [/What we learned mapping.*AI-enabled cyber threats/i,
+      'Anthropic 发布 AI 网络威胁年度研究，揭示 AI 赋能攻击的模式与趋势。'],
+    [/Case Study\s*UST is bringing Claude to physical AI/i,
+      '案例：UST 将 Claude 应用于实体 AI，推动物理世界智能化。'],
+    [/Case Study\s*Government of Alberta uses Claude/i,
+      '案例：加拿大阿尔伯塔省政府使用 Claude 发现并修复网络安全漏洞。'],
+];
+
+// 关键词替换表（模块级常量）
+const WORD_MAP = [
+  [/\bpartner(?:s)? with\b/ig, '与...合作'],
+  [/\bpartner(?:s)? to\b/ig, '合作以'],
+  [/\bcommit(?:s|ted)? to\b/ig, '承诺'],
+  [/\brelease(?:s|d)?\b/ig, '发布'],
+  [/\blaunch(?:es|ed)?\b/ig, '推出'],
+  [/\bintegrat(?:e|es|ed)\b/ig, '集成'],
+  [/\bsecurity\b/ig, '安全'],
+  [/\bmodel evaluation\b/ig, '模型评测'],
+  [/\bresearch grants?\b/ig, '研究资助'],
+  [/\bdata center\b/ig, '数据中心'],
+  [/\bopen source\b/ig, '开源'],
+  [/\bannounce(?:s|d|ment)?\b/ig, '宣布'],
+  [/\bexpand(?:s|ed|ing)?\b/ig, '扩展'],
+  [/\bcyber\s*security\b/ig, '网络安全'],
+  [/\bcyber\s*threats?\b/ig, '网络威胁'],
+  [/\bvulnerabilit(?:y|ies)\b/ig, '漏洞'],
+  [/\bfrontier\b/ig, '前沿'],
+  [/\benterprise\b/ig, '企业'],
+  [/\bregulat(?:ed|ory)\b/ig, '受监管'],
+  [/\bindustry\b/ig, '行业'],
+  [/\bAI for Science\b/ig, 'AI 科研'],
+  [/\brace disease\b/ig, '罕见病'],
+  [/\bhealth intelligence\b/ig, '健康智能'],
+  [/\bsmall business\b/ig, '中小企业'],
+  [/\bspend controls?\b/ig, '消费管控'],
+  [/\busage analytics?\b/ig, '用量分析'],
+  [/\breflect\b/ig, '回顾'],
+  [/\bhard questions?\b/ig, '难题'],
+  [/\bpublic record\b/ig, '公共记录'],
+  [/\bsafeguards?\b/ig, '安全防护'],
+  [/\bjailbreak\b/ig, '越狱攻击'],
+  [/\bresponsible scaling\b/ig, '负责任扩展'],
+  [/\bLong-Term Benefit Trust\b/ig, '长期利益信托'],
+];
+
+function cleanDigestText(text) {
+  return String(text || '')
+    .replace(/[\n\r]+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function hasChinese(text) {
+  return /[一-龥]/.test(text);
+}
+
+/**
+ * 生成中文摘要：如有中文直接返回，否则翻译英文标题
+ */
+function buildChineseDigest(item) {
+  const baseText = cleanDigestText(item.summary || item.title || '');
+  if (!baseText) { return '该条资讯暂无可用摘要。'; }
+  if (hasChinese(baseText)) {
+    return baseText;
+  }
+  return translateToChinese(item, baseText);
+}
+
+/**
+ * 将英文 AI 新闻标题翻译为中文摘要
+ * 按优先级：完整句子匹配（PHRASE_MAP）→ 前缀替换 → 关键词替换（WORD_MAP）→ 兜底
+ */
+function translateToChinese(item, text) {
+  // 1. 完整句子/短语匹配（使用模块级 PHRASE_MAP）
+  for (const [pattern, translation] of PHRASE_MAP) {
+    if (pattern.test(text)) {
+      return translation;
+    }
+  }
+
+  // 2. 前缀替换
+  let t = text;
+  t = t.replace(/^Case Study\s*/i, '案例：');
+  t = t.replace(/^Introducing the\s*/i, '发布 ');
+  t = t.replace(/^Introducing an?\s*/i, '推出 ');
+  t = t.replace(/^Introducing\s*/i, '发布 ');
+  t = t.replace(/^Announcing\s*/i, '宣布 ');
+  t = t.replace(/^Apply for\s*/i, '开放申请 ');
+  t = t.replace(/^Statement on\s*/i, '就「');
+  t = t.replace(/^What we learned\s*/i, '研究总结：');
+  t = t.replace(/^New\s*/i, '新增 ');
+  t = t.replace(/^Improving\s*/i, '改进 ');
+  t = t.replace(/^More details on\s*/i, '更多关于 ');
+  t = t.replace(/^OpenAI and\s*/i, 'OpenAI 与 ');
+  t = t.replace(/^Anthropic and\s*/i, 'Anthropic 与 ');
+
+  // 3. 关键词替换（使用模块级 WORD_MAP）
+  for (const [pattern, replacement] of WORD_MAP) {
+    t = t.replace(pattern, replacement);
+  }
+
+  // 4. 清理
+  t = t.replace(/\s{2,}/g, ' ').replace(/[。.!?]$/, '').trim();
+
+  if (hasChinese(t)) {
+    return t;
+  }
+
+  // 5. 兜底：截取前 100 字符
+  const short = text.substring(0, 100).replace(/\s+\S*$/, '').replace(/[.!?,;:]$/g, '');
+  if (hasChinese(short)) {
+    return short;
+  }
+
+  return `该条资讯来自 ${item.sourceName || '外部来源'}，详情请查看原文。`;
+}
+
 // ===================== Markdown 生成 =====================
 
 function generateMarkdown(items, briefType, dateStr) {
@@ -179,7 +350,7 @@ function generateMarkdown(items, briefType, dateStr) {
 
   md += '\n';
 
-  // 二、今日值得关注（放在最前面，让读者快速了解重点）
+  // 二、今日值得关注（中文摘要形式呈现）
   md += `## 二、今日值得关注\n\n`;
   const highlights = pickHighlights(items);
   if (highlights.length > 0) {
@@ -203,13 +374,13 @@ function generateMarkdown(items, briefType, dateStr) {
       md += '- 今日无可验证更新。\n\n';
     } else {
       catItems.forEach((item) => {
-        const dateInfo = item.date
-          ? `（${formatDateChinese(item.date)} ${formatTime(item.date)}）`
+        const digest = buildChineseDigest(item);
+        const timeInfo = item.date
+          ? `${formatDateChinese(item.date)} ${formatTime(item.date)}`
           : '';
-        md += `- **${item.title}** ${dateInfo}\n`;
-        md += `  摘要：${buildChineseDigest(item)}\n`;
-        if (item.summary) {
-          md += `  原文要点：${cleanDigestText(item.summary)}\n`;
+        md += `- **${digest}**\n`;
+        if (timeInfo) {
+          md += `  ${timeInfo}\n`;
         }
         md += `  来源：[${item.sourceName}](${item.url})\n`;
       });
@@ -236,59 +407,18 @@ function generateMarkdown(items, briefType, dateStr) {
   return md;
 }
 
+/**
+ * 挑选高优先级新闻作为"今日值得关注"
+ * 优先选择有中文摘要且标记为高优先级的条目
+ */
 function pickHighlights(items) {
   const important = items.filter(
     (i) => (i.priority || 1) === 1 && i.summary && i.summary.length > 20,
   );
-  if (important.length === 0) { return items.slice(0, 3).map((i) => buildChineseDigest(i)); }
+  if (important.length === 0) {
+    return items.slice(0, 5).map((i) => buildChineseDigest(i));
+  }
   return important.slice(0, 5).map((i) => buildChineseDigest(i));
-}
-
-function buildChineseDigest(item) {
-  const baseText = cleanDigestText(item.summary || item.title || '');
-  if (!baseText) { return '该条资讯暂无可用摘要。'; }
-  if (/[\u4e00-\u9fa5]/.test(baseText)) {
-    return baseText;
-  }
-
-  let text = baseText;
-  text = text.replace(/^Case Study\s*/i, '案例：');
-  text = text.replace(/^Introducing the\s*/i, '发布 ');
-  text = text.replace(/^Introducing an\s*/i, '推出 ');
-  text = text.replace(/^Introducing a\s*/i, '推出 ');
-  text = text.replace(/^Introducing\s*/i, '发布 ');
-  text = text.replace(/^Announcing\s*/i, '宣布 ');
-  text = text.replace(/^Apply for\s*/i, '开放申请 ');
-  text = text.replace(/^Statement on\s*/i, '就 ');
-  text = text.replace(/^What we learned\s*/i, '我们从 ');
-  text = text.replace(/^New\s*/i, '新发布 ');
-  text = text.replace(/^Improving\s*/i, '改进 ');
-  text = text.replace(/^OpenAI and\s*/i, 'OpenAI 与 ');
-  text = text.replace(/^Anthropic and\s*/i, 'Anthropic 与 ');
-  text = text.replace(/\bpartner(?:s)? with\b/ig, '合作与');
-  text = text.replace(/\bpartner(?:s)? to\b/ig, '合作以');
-  text = text.replace(/\bcommit(?:s|ted)? to\b/ig, '承诺');
-  text = text.replace(/\brelease(?:s|d)?\b/ig, '发布');
-  text = text.replace(/\blaunch(?:es|ed)?\b/ig, '推出');
-  text = text.replace(/\bintegrat(?:e|es|ed)\b/ig, '集成');
-  text = text.replace(/\bsecurity\b/ig, '安全');
-  text = text.replace(/\bmodel evaluation\b/ig, '模型评测');
-  text = text.replace(/\bresearch grants?\b/ig, '研究资助');
-  text = text.replace(/\bdata center\b/ig, '数据中心');
-  text = text.replace(/\bopen source\b/ig, '开源');
-
-  const normalized = text.replace(/\s{2,}/g, ' ').trim().replace(/[。.!?]$/, '');
-  if (/[\u4e00-\u9fa5]/.test(normalized)) {
-    return normalized;
-  }
-  return `发布 ${normalized}`;
-}
-
-function cleanDigestText(text) {
-  return String(text || '')
-    .replace(/[\n\r]+/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
 }
 
 // ===================== 主流程 =====================

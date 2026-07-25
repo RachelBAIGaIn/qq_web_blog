@@ -6,7 +6,7 @@ const isBuild = process.env.NODE_ENV === 'production' || process.argv.includes('
 
 export default defineConfig({
   // GitHub Pages 地址；本地开发不带子路径，构建部署时加仓库名
-  site: isBuild ? 'https://rachelbaigaln.github.io/qq_web_blog' : 'http://localhost:4321',
+  site: isBuild ? 'https://rachelbaigain.github.io/qq_web_blog' : 'http://localhost:4321',
   base: isBuild ? '/qq_web_blog' : '/',
 
   // 开发服务器配置
