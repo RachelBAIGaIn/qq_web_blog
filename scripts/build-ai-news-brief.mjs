@@ -207,8 +207,9 @@ function generateMarkdown(items, briefType, dateStr) {
           ? `（${formatDateChinese(item.date)} ${formatTime(item.date)}）`
           : '';
         md += `- **${item.title}** ${dateInfo}\n`;
+        md += `  摘要：${buildChineseDigest(item)}\n`;
         if (item.summary) {
-          md += `  ${item.summary}\n`;
+          md += `  原文要点：${cleanDigestText(item.summary)}\n`;
         }
         md += `  来源：[${item.sourceName}](${item.url})\n`;
       });
@@ -239,8 +240,55 @@ function pickHighlights(items) {
   const important = items.filter(
     (i) => (i.priority || 1) === 1 && i.summary && i.summary.length > 20,
   );
-  if (important.length === 0) { return items.slice(0, 3).map((i) => i.title); }
-  return important.slice(0, 5).map((i) => i.title);
+  if (important.length === 0) { return items.slice(0, 3).map((i) => buildChineseDigest(i)); }
+  return important.slice(0, 5).map((i) => buildChineseDigest(i));
+}
+
+function buildChineseDigest(item) {
+  const baseText = cleanDigestText(item.summary || item.title || '');
+  if (!baseText) { return '该条资讯暂无可用摘要。'; }
+  if (/[\u4e00-\u9fa5]/.test(baseText)) {
+    return baseText;
+  }
+
+  let text = baseText;
+  text = text.replace(/^Case Study\s*/i, '案例：');
+  text = text.replace(/^Introducing the\s*/i, '发布 ');
+  text = text.replace(/^Introducing an\s*/i, '推出 ');
+  text = text.replace(/^Introducing a\s*/i, '推出 ');
+  text = text.replace(/^Introducing\s*/i, '发布 ');
+  text = text.replace(/^Announcing\s*/i, '宣布 ');
+  text = text.replace(/^Apply for\s*/i, '开放申请 ');
+  text = text.replace(/^Statement on\s*/i, '就 ');
+  text = text.replace(/^What we learned\s*/i, '我们从 ');
+  text = text.replace(/^New\s*/i, '新发布 ');
+  text = text.replace(/^Improving\s*/i, '改进 ');
+  text = text.replace(/^OpenAI and\s*/i, 'OpenAI 与 ');
+  text = text.replace(/^Anthropic and\s*/i, 'Anthropic 与 ');
+  text = text.replace(/\bpartner(?:s)? with\b/ig, '合作与');
+  text = text.replace(/\bpartner(?:s)? to\b/ig, '合作以');
+  text = text.replace(/\bcommit(?:s|ted)? to\b/ig, '承诺');
+  text = text.replace(/\brelease(?:s|d)?\b/ig, '发布');
+  text = text.replace(/\blaunch(?:es|ed)?\b/ig, '推出');
+  text = text.replace(/\bintegrat(?:e|es|ed)\b/ig, '集成');
+  text = text.replace(/\bsecurity\b/ig, '安全');
+  text = text.replace(/\bmodel evaluation\b/ig, '模型评测');
+  text = text.replace(/\bresearch grants?\b/ig, '研究资助');
+  text = text.replace(/\bdata center\b/ig, '数据中心');
+  text = text.replace(/\bopen source\b/ig, '开源');
+
+  const normalized = text.replace(/\s{2,}/g, ' ').trim().replace(/[。.!?]$/, '');
+  if (/[\u4e00-\u9fa5]/.test(normalized)) {
+    return normalized;
+  }
+  return `发布 ${normalized}`;
+}
+
+function cleanDigestText(text) {
+  return String(text || '')
+    .replace(/[\n\r]+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 // ===================== 主流程 =====================

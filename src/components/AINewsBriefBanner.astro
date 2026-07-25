@@ -17,6 +17,7 @@ interface Brief {
   data: {
     title: string;
     date: string;
+    description?: string;
     newsCount?: number;
     status?: string;
     briefType?: string;
@@ -31,8 +32,13 @@ interface Props {
 }
 
 const { morning, evening } = Astro.props;
+const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL + '/';
 
-function statusText(brief?: Brief | null, type?: string): string {
+function briefTypeLabel(brief?: Brief | null): string {
+  return brief?.data.briefType === 'evening' ? '晚报' : '早报';
+}
+
+function statusText(brief?: Brief | null): string {
   if (!brief) { return '暂无简报'; }
   const s = brief.data.status || 'published';
   if (s === 'draft' || s === 'review') { return '待审核'; }
@@ -46,6 +52,10 @@ function statusClass(brief?: Brief | null): string {
   return 'banner-status-published';
 }
 
+function summaryText(brief?: Brief | null): string {
+  return brief?.data.description?.trim() || '暂无中文摘要';
+}
+
 const hasMorning = !!morning;
 const hasEvening = !!evening;
 ---
@@ -54,40 +64,54 @@ const hasEvening = !!evening;
   (hasMorning || hasEvening) && (
     <div class="daily-brief-banner">
       <div class="banner-header">
-        <span class="banner-title">📰 AI行业日报</span>
+        <div>
+          <p class="banner-kicker">AI 行业日报</p>
+          <h2 class="banner-title">早报 / 晚报</h2>
+        </div>
+        <span class="banner-hint">中文摘要 · 站点聚合</span>
       </div>
       <div class="banner-cards">
         {
           hasMorning && (
             <a
-              href={`/${morning!.collection}/${morning!.slug}/`}
-              class="banner-card"
+              href={`${base}${morning!.collection}/${morning!.slug}/`}
+              class="banner-card banner-card--morning"
             >
-              <span class="banner-card-icon">🌅</span>
-              <span class="banner-card-label">早报</span>
-              <span class="banner-card-date">
-                {formatDate(morning!.data.date)}
-              </span>
-              <span class={`banner-card-status ${statusClass(morning)}`}>
-                {statusText(morning, 'morning')}
-              </span>
+              <div class="banner-card-top">
+                <span class="banner-card-icon">🌅</span>
+                <span class="banner-card-label">早报</span>
+                <span class={`banner-card-status ${statusClass(morning)}`}>
+                  {statusText(morning)}
+                </span>
+              </div>
+              <h3 class="banner-card-title">{morning!.data.title}</h3>
+              <p class="banner-card-summary">{summaryText(morning)}</p>
+              <div class="banner-card-meta">
+                <span>📅 {formatDate(morning!.data.date)}</span>
+                <span>📊 {morning!.data.newsCount || 0} 条</span>
+              </div>
             </a>
           )
         }
         {
           hasEvening && (
             <a
-              href={`/${evening!.collection}/${evening!.slug}/`}
-              class="banner-card"
+              href={`${base}${evening!.collection}/${evening!.slug}/`}
+              class="banner-card banner-card--evening"
             >
-              <span class="banner-card-icon">🌇</span>
-              <span class="banner-card-label">晚报</span>
-              <span class="banner-card-date">
-                {formatDate(evening!.data.date)}
-              </span>
-              <span class={`banner-card-status ${statusClass(evening)}`}>
-                {statusText(evening, 'evening')}
-              </span>
+              <div class="banner-card-top">
+                <span class="banner-card-icon">🌇</span>
+                <span class="banner-card-label">晚报</span>
+                <span class={`banner-card-status ${statusClass(evening)}`}>
+                  {statusText(evening)}
+                </span>
+              </div>
+              <h3 class="banner-card-title">{evening!.data.title}</h3>
+              <p class="banner-card-summary">{summaryText(evening)}</p>
+              <div class="banner-card-meta">
+                <span>📅 {formatDate(evening!.data.date)}</span>
+                <span>📊 {evening!.data.newsCount || 0} 条</span>
+              </div>
             </a>
           )
         }
@@ -98,45 +122,68 @@ const hasEvening = !!evening;
 
 <style>
   .daily-brief-banner {
-    background: linear-gradient(135deg, #ebf8ff 0%, #f0fff4 100%);
-    border-radius: var(--radius-md);
+    background: #fff;
+    border-radius: 8px;
     border: 1px solid var(--color-border-light);
-    padding: 0.8rem 1.2rem;
+    padding: 1rem 1.1rem;
     margin-bottom: var(--spacing-lg);
   }
 
   .banner-header {
-    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: 1rem;
+  }
+
+  .banner-kicker {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.15rem;
   }
 
   .banner-title {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: var(--color-text);
   }
 
+  .banner-hint {
+    font-size: 0.78rem;
+    color: var(--color-text-light);
+  }
+
   .banner-cards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-md);
-    flex-wrap: wrap;
   }
 
   .banner-card {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.8rem;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1rem;
     background: #fff;
     border-radius: 8px;
     border: 1px solid var(--color-border-light);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
+    min-width: 0;
   }
 
   .banner-card:hover {
     box-shadow: var(--shadow-sm);
     border-color: var(--color-primary);
+    transform: translateY(-1px);
+  }
+
+  .banner-card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
   }
 
   .banner-card-icon {
@@ -148,16 +195,34 @@ const hasEvening = !!evening;
     color: var(--color-text);
   }
 
-  .banner-card-date {
-    color: var(--color-text-light);
-    font-size: 0.8rem;
+  .banner-card-title {
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.45;
+    min-height: 2.9em;
   }
 
   .banner-card-status {
+    margin-left: auto;
     font-size: 0.72rem;
-    padding: 0.1rem 0.4rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 8px;
     font-weight: 500;
+  }
+
+  .banner-card-summary {
+    color: var(--color-text-light);
+    font-size: 0.84rem;
+    line-height: 1.65;
+    min-height: 3.2em;
+  }
+
+  .banner-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    color: var(--color-text-light);
+    font-size: 0.78rem;
   }
 
   .banner-status-published {
@@ -173,5 +238,16 @@ const hasEvening = !!evening;
   .banner-status-empty {
     background-color: #edf2f7;
     color: #718096;
+  }
+
+  @media (max-width: 760px) {
+    .banner-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .banner-cards {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

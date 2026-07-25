@@ -1,10 +1,11 @@
 ---
 /**
  * AI 资讯列表页
- * 展示最新早报/晚报横幅、今日摘要、历史资讯列表
+ * 展示最新早报/晚报、日报归档和普通 AI 资讯
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PostCard from '@components/PostCard.astro';
+import AINewsBriefBanner from '@components/AINewsBriefBanner.astro';
 import { getPostsByCollection, getDailyBriefs } from '@utils/posts';
 import { formatDate } from '@utils/formatDate';
 
@@ -22,27 +23,37 @@ const thirtyDaysAgo = new Date();
 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 const recentBriefs = briefs
   .filter((b) => new Date(b.data.date) >= thirtyDaysAgo)
-  .sort((a, b) => {
-    const da = new Date(a.data.date).getTime();
-    const db = new Date(b.data.date).getTime();
-    return db - da;
-  });
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-// 日报状态文案
-function getBriefStatusText(brief: any): string {
-  if (!brief) { return '今日暂无新AI行业简报'; }
-  const status = brief.data.status || 'published';
-  if (status === 'draft') { return '今日AI行业简报待审核'; }
-  if (status === 'review') { return '今日AI行业简报待审核'; }
-  const typeLabel = brief.data.briefType === 'morning' ? '早报' : '晚报';
-  return `今日AI行业${typeLabel}已更新`;
+function briefTypeLabel(brief: any): string {
+  return brief.data.briefType === 'evening' ? '晚报' : '早报';
 }
 
-function getBriefStatusClass(brief: any): string {
+function briefTypeIcon(brief: any): string {
+  return brief.data.briefType === 'evening' ? '🌇' : '🌅';
+}
+
+function briefStatusText(brief: any): string {
+  if (!brief) { return '暂无'; }
+  const status = brief.data.status || 'published';
+  if (status === 'draft' || status === 'review') { return '待审核'; }
+  return '已更新';
+}
+
+function briefStatusClass(brief: any): string {
   if (!brief) { return 'status-empty'; }
   const status = brief.data.status || 'published';
   if (status === 'draft' || status === 'review') { return 'status-review'; }
   return 'status-published';
+}
+
+function briefSummary(brief: any): string {
+  return brief?.data?.description?.trim() || '暂无中文摘要。';
+}
+
+function shortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 
 // 最近更新时间
@@ -52,137 +63,76 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
 
 <BaseLayout
   title="AI 相关资讯"
-  description="AI 新闻动态、工具更新、模型进展与行业观察"
+  description="早报、晚报和 AI 新闻摘要，按中文简报方式聚合展示"
 >
-  <!-- ========== 页面标题 ========== -->
-  <header style="margin-bottom: var(--spacing-xl);">
-    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
-      🤖 AI 相关资讯
-    </h1>
-    <p style="color: var(--color-text-light);">
-      AI 新闻动态、工具更新、模型进展与行业观察
-    </p>
-  </header>
-
-  <!-- ========== 最新日报横幅 ========== -->
-  <section style="margin-bottom: var(--spacing-xl);">
-    <h2 class="section-title">📰 今日行业简报</h2>
-    <div class="brief-grid">
-      <!-- 早报卡片 -->
-      <div class={`brief-card ${latestMorning ? 'brief-card--active' : 'brief-card--empty'}`}>
-        <div class="brief-card-header">
-          <span class="brief-card-icon">🌅</span>
-          <h3 class="brief-card-title">AI行业早报</h3>
-        </div>
-        {
-          latestMorning ? (
-            <div class="brief-card-body">
-              <p class="brief-card-date">
-                📅 {formatDate(latestMorning.data.date)}
-              </p>
-              <p class="brief-card-count">
-                📊 共 {latestMorning.data.newsCount || '?'} 条资讯
-              </p>
-              <span class={`brief-status ${getBriefStatusClass(latestMorning)}`}>
-                {getBriefStatusText(latestMorning)}
-              </span>
-              <a
-                href={`${base}ai-news/${latestMorning.slug}/`}
-                class="btn btn-primary brief-card-btn"
-              >
-                阅读早报 →
-              </a>
-            </div>
-          ) : (
-            <div class="brief-card-body">
-              <p class="brief-card-empty-text">今日早报尚未生成</p>
-              <p class="brief-card-hint">
-                每日 08:00 自动生成，请耐心等待
-              </p>
-              <span class="brief-status status-empty">
-                今日暂无新AI行业简报
-              </span>
-            </div>
-          )
-        }
+  <section class="news-hero">
+    <div class="news-hero__main">
+      <p class="news-hero__eyebrow">AI 行业早报 / 晚报</p>
+      <h1 class="news-hero__title">AI 相关资讯</h1>
+      <p class="news-hero__desc">
+        聚合各网站的 AI 新闻，优先呈现早报和晚报的中文摘要，方便快速浏览当天重点。
+      </p>
+      <div class="news-hero__meta">
+        <span>今日简报 {briefs.length} 期</span>
+        <span>普通资讯 {regularPosts.length} 条</span>
+        <span>{updateTimeHint}</span>
       </div>
+    </div>
 
-      <!-- 晚报卡片 -->
-      <div class={`brief-card ${latestEvening ? 'brief-card--active' : 'brief-card--empty'}`}>
-        <div class="brief-card-header">
-          <span class="brief-card-icon">🌇</span>
-          <h3 class="brief-card-title">AI行业晚报</h3>
-        </div>
-        {
-          latestEvening ? (
-            <div class="brief-card-body">
-              <p class="brief-card-date">
-                📅 {formatDate(latestEvening.data.date)}
-              </p>
-              <p class="brief-card-count">
-                📊 共 {latestEvening.data.newsCount || '?'} 条资讯
-              </p>
-              <span class={`brief-status ${getBriefStatusClass(latestEvening)}`}>
-                {getBriefStatusText(latestEvening)}
-              </span>
-              <a
-                href={`${base}ai-news/${latestEvening.slug}/`}
-                class="btn btn-primary brief-card-btn"
-              >
-                阅读晚报 →
-              </a>
-            </div>
-          ) : (
-            <div class="brief-card-body">
-              <p class="brief-card-empty-text">今日晚报尚未生成</p>
-              <p class="brief-card-hint">
-                每日 20:00 自动生成，请耐心等待
-              </p>
-              <span class="brief-status status-empty">
-                今日暂无新AI行业简报
-              </span>
-            </div>
-          )
-        }
+    <div class="news-hero__stats">
+      <div class="hero-stat">
+        <span class="hero-stat__label">早报</span>
+        <strong class="hero-stat__value">
+          {latestMorning ? formatDate(latestMorning.data.date) : '待更新'}
+        </strong>
+        <small>{latestMorning ? `${latestMorning.data.newsCount || 0} 条摘要` : '08:00 自动生成'}</small>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat__label">晚报</span>
+        <strong class="hero-stat__value">
+          {latestEvening ? formatDate(latestEvening.data.date) : '待更新'}
+        </strong>
+        <small>{latestEvening ? `${latestEvening.data.newsCount || 0} 条摘要` : '20:00 自动生成'}</small>
       </div>
     </div>
   </section>
 
-  <!-- ========== 自动更新说明 ========== -->
-  <div class="auto-update-hint">
-    <span class="auto-update-icon">🔄</span>
-    <span>
-      系统每天 <strong>08:00</strong> 和 <strong>20:00</strong> 自动采集一手 AI 行业资讯并生成简报。
-      当前为"自动生成 + 人工审核后发布"模式，确保内容准确可靠。
-    </span>
-    <span class="auto-update-time">{updateTimeHint}</span>
-  </div>
+  <section class="section-block">
+    <div class="section-block__head">
+      <h2 class="section-title">今日简报</h2>
+      <p class="section-block__sub">早报和晚报优先展示中文摘要，点开可看完整正文。</p>
+    </div>
+    <AINewsBriefBanner morning={latestMorning} evening={latestEvening} />
+  </section>
 
-  <!-- ========== 最近30天日报列表 ========== -->
   {
     recentBriefs.length > 0 && (
-      <section style="margin-top: var(--spacing-xl);">
-        <h2 class="section-title">📋 最近30天日报</h2>
-        <div class="brief-list">
+      <section class="section-block">
+        <div class="section-block__head">
+          <h2 class="section-title">最近 30 天日报</h2>
+          <p class="section-block__sub">按日期查看早报和晚报归档。</p>
+        </div>
+        <div class="brief-archive">
           {
             recentBriefs.map((brief) => {
-              const d = new Date(brief.data.date);
-              const shortDate = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
-              const typeIcon = brief.data.briefType === 'morning' ? '🌅' : '🌇';
-              const typeLabel = brief.data.briefType === 'morning' ? '早报' : '晚报';
-              const statusLabel = (brief.data.status === 'review' || brief.data.status === 'draft')
-                ? '⏳' : '✅';
+              const status = brief.data.status || 'published';
               return (
-                <a
-                  href={`${base}ai-news/${brief.slug}/`}
-                  class="brief-list-item"
-                >
-                  <span class="brief-list-icon">{typeIcon}</span>
-                  <span class="brief-list-date">{shortDate}</span>
-                  <span class="brief-list-type">{typeLabel}</span>
-                  <span class="brief-list-title">{brief.data.title}</span>
-                  <span class="brief-list-count">{brief.data.newsCount || 0}条</span>
-                  <span class="brief-list-status">{statusLabel}</span>
+                <a href={`${base}ai-news/${brief.slug}/`} class="brief-archive__item">
+                  <div class="brief-archive__date">
+                    <span class="brief-archive__icon">{briefTypeIcon(brief)}</span>
+                    <strong>{shortDate(brief.data.date)}</strong>
+                    <span>{briefTypeLabel(brief)}</span>
+                  </div>
+                  <div class="brief-archive__body">
+                    <h3>{brief.data.title}</h3>
+                    <p>{briefSummary(brief)}</p>
+                    <div class="brief-archive__meta">
+                      <span>{brief.data.newsCount || 0} 条摘要</span>
+                      <span class={`brief-status ${status === 'draft' || status === 'review' ? 'status-review' : 'status-published'}`}>
+                        {briefStatusText(brief)}
+                      </span>
+                    </div>
+                  </div>
                 </a>
               );
             })
@@ -192,14 +142,16 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
     )
   }
 
-  <!-- ========== 历史资讯列表 ========== -->
-  <section style="margin-top: var(--spacing-xl);">
-    <h2 class="section-title">📚 历史资讯与日报</h2>
+  <section class="section-block">
+    <div class="section-block__head">
+      <h2 class="section-title">普通 AI 资讯</h2>
+      <p class="section-block__sub">保留其他 AI 相关内容与项目动态。</p>
+    </div>
     {
-      posts.length > 0 ? (
+      regularPosts.length > 0 ? (
         <div class="posts-grid">
           {
-            posts.map((post) => (
+            regularPosts.map((post) => (
               <PostCard
                 title={post.data.title}
                 date={post.data.date}
@@ -226,88 +178,170 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
 </BaseLayout>
 
 <style>
-  /* ---------- 日报卡片网格 ---------- */
-  .brief-grid {
+  .news-hero {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
     gap: var(--spacing-lg);
+    padding: 1.25rem 0 1.5rem;
+    margin-bottom: var(--spacing-lg);
   }
 
-  .brief-card {
-    background: var(--color-bg-card);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border-light);
-    box-shadow: var(--shadow-sm);
-    padding: var(--spacing-xl);
-    transition: all 0.25s ease;
+  .news-hero__main {
+    min-width: 0;
   }
 
-  .brief-card--active {
-    border-left: 4px solid var(--color-primary);
-  }
-
-  .brief-card--active:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  .brief-card--empty {
-    opacity: 0.7;
-    border-left: 4px solid var(--color-border);
-  }
-
-  .brief-card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .brief-card-icon {
-    font-size: 1.5rem;
-  }
-
-  .brief-card-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-  }
-
-  .brief-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .brief-card-date,
-  .brief-card-count {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-  }
-
-  .brief-card-empty-text {
-    font-size: 0.95rem;
-    color: var(--color-text-light);
-  }
-
-  .brief-card-hint {
+  .news-hero__eyebrow {
     font-size: 0.8rem;
     color: var(--color-text-light);
-    opacity: 0.7;
+    margin-bottom: 0.35rem;
   }
 
-  .brief-card-btn {
-    margin-top: 0.5rem;
-    align-self: flex-start;
-    font-size: 0.9rem;
-    text-decoration: none;
+  .news-hero__title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.65rem;
   }
 
-  /* ---------- 状态标签 ---------- */
-  .brief-status {
-    display: inline-block;
+  .news-hero__desc {
+    color: var(--color-text-light);
+    max-width: 42rem;
+    line-height: 1.75;
+    margin-bottom: 0.9rem;
+  }
+
+  .news-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+  }
+
+  .news-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+    align-self: stretch;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.35rem;
+    padding: 1rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero-stat__label {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+  }
+
+  .hero-stat__value {
+    font-size: 1.05rem;
+    color: var(--color-text);
+  }
+
+  .hero-stat small {
     font-size: 0.78rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 12px;
+    color: var(--color-text-light);
+  }
+
+  .section-block {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .section-block__head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .section-block__sub {
+    font-size: 0.86rem;
+    color: var(--color-text-light);
+  }
+
+  .brief-archive {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .brief-archive__item {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--spacing-md);
+    padding: 0.95rem 1rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .brief-archive__item:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .brief-archive__date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    color: var(--color-text-light);
+    min-width: 0;
+  }
+
+  .brief-archive__icon {
+    font-size: 1rem;
+  }
+
+  .brief-archive__date strong {
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+
+  .brief-archive__body {
+    min-width: 0;
+  }
+
+  .brief-archive__body h3 {
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 0.35rem;
+  }
+
+  .brief-archive__body p {
+    color: var(--color-text-light);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+  }
+
+  .brief-archive__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    color: var(--color-text-light);
+    font-size: 0.78rem;
+  }
+
+  .brief-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.45rem;
+    border-radius: 8px;
     font-weight: 500;
   }
 
@@ -326,115 +360,34 @@ const updateTimeHint = `页面更新时间: ${formatDate(now.toISOString())} ${S
     color: #718096;
   }
 
-  /* ---------- 自动更新提示 ---------- */
-  .auto-update-hint {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 1rem 1.2rem;
-    background-color: #f0fff4;
-    border-radius: var(--radius-sm);
-    border-left: 3px solid #38a169;
-    font-size: 0.85rem;
-    color: #276749;
-    line-height: 1.6;
-  }
-
-  .auto-update-icon {
-    font-size: 1.1rem;
-  }
-
-  .auto-update-time {
-    font-size: 0.75rem;
-    color: #718096;
-    margin-top: 0.2rem;
-  }
-
-  /* ---------- 文章列表 ---------- */
   .posts-grid {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
   }
 
-  /* ---------- 日报列表 ---------- */
-  .brief-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .brief-list-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 0.8rem;
-    background: var(--color-bg-card);
-    border-radius: 6px;
-    border: 1px solid var(--color-border-light);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-  }
-
-  .brief-list-item:hover {
-    border-color: var(--color-primary);
-    background: #f8fafc;
-  }
-
-  .brief-list-icon {
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-
-  .brief-list-date {
-    color: var(--color-text-light);
-    font-size: 0.8rem;
-    flex-shrink: 0;
-    min-width: 5rem;
-  }
-
-  .brief-list-type {
-    font-weight: 600;
-    color: var(--color-text);
-    flex-shrink: 0;
-    min-width: 2.5rem;
-  }
-
-  .brief-list-title {
-    color: var(--color-text);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .brief-list-count {
-    color: var(--color-text-light);
-    font-size: 0.78rem;
-    flex-shrink: 0;
-  }
-
-  .brief-list-status {
-    flex-shrink: 0;
-    font-size: 0.75rem;
-  }
-
-  /* ---------- 响应式 ---------- */
-  @media (max-width: 700px) {
-    .brief-grid {
+  @media (max-width: 860px) {
+    .news-hero {
       grid-template-columns: 1fr;
     }
 
-    .brief-list-item {
-      flex-wrap: wrap;
-      gap: 0.3rem 0.5rem;
-      padding: 0.6rem;
+    .news-hero__stats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .section-block__head {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .brief-list-title {
-      white-space: normal;
-      flex: 1 1 100%;
+    .brief-archive__item {
+      grid-template-columns: 1fr;
+    }
+
+    .news-hero__title {
+      font-size: 1.6rem;
     }
   }
 </style>

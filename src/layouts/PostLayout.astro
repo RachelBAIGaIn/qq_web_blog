@@ -17,19 +17,29 @@ const base = import.meta.env.BASE_URL === '/' ? '/' : import.meta.env.BASE_URL +
 interface Props {
   title: string;
   date: string;
+  description?: string;
   category?: string;
   tags?: string[];
   cover?: string;
   collection: string;
+  isDailyBrief?: boolean;
+  briefType?: 'morning' | 'evening';
+  newsCount?: number;
+  status?: string;
 }
 
 const {
   title,
   date,
+  description,
   category,
   tags = [],
   cover,
   collection,
+  isDailyBrief = false,
+  briefType,
+  newsCount,
+  status,
 } = Astro.props;
 
 // 计算阅读时间（用页面的正文内容）
@@ -46,6 +56,10 @@ const collectionNames: Record<string, string> = {
 
 const collectionName = collectionNames[collection] || collection;
 const fullTitle = `${title} - ${siteConfig.title}`;
+const isAiBrief = collection === 'ai-news' && isDailyBrief;
+const briefTypeLabel = briefType === 'evening' ? '晚报' : '早报';
+const briefStatusLabel = status === 'draft' || status === 'review' ? '待审核' : '已发布';
+const metaDescription = description || title;
 ---
 
 <!doctype html>
@@ -53,7 +67,7 @@ const fullTitle = `${title} - ${siteConfig.title}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={title} />
+    <meta name="description" content={metaDescription} />
     <title>{fullTitle}</title>
     <link
       rel="icon"
@@ -73,7 +87,7 @@ const fullTitle = `${title} - ${siteConfig.title}`;
         </div>
 
         <!-- 文章头部信息 -->
-        <header style="margin-bottom: 2rem; text-align: center;">
+        <header class={isAiBrief ? 'brief-hero' : 'article-hero'} style="margin-bottom: 2rem;">
           <!-- 文章封面图 -->
           {
             cover && (
@@ -81,39 +95,68 @@ const fullTitle = `${title} - ${siteConfig.title}`;
                 src={`${base}${cover.replace(/^\//, '')}`}
                 alt={title}
                 style="max-height: 360px; width: 100%; object-fit: cover;
-                  border-radius: var(--radius-lg); margin-bottom: 1.5rem;"
+                  border-radius: var(--radius-md); margin-bottom: 1.5rem;"
               />
             )
           }
 
-          <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.8rem;
-            line-height: 1.4;">
-            {title}
-          </h1>
-
-          <div style="color: var(--color-text-light); font-size: 0.9rem;
-            display: flex; align-items: center; justify-content: center;
-            gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
-            <span>📅 {formatDate(date)}</span>
-            {
-              category && (
-                <span>📂 {category}</span>
-              )
-            }
-            <span>⏱ 阅读约 {readTime} 分钟</span>
-          </div>
-
           {
-            tags.length > 0 && (
-              <div style="display: flex; justify-content: center; margin-top: 0.5rem;">
-                <TagList tags={tags} />
+            isAiBrief ? (
+              <div class="brief-hero__inner">
+                <div class="brief-hero__main">
+                  <p class="brief-hero__eyebrow">AI 行业 {briefTypeLabel}</p>
+                  <h1>{title}</h1>
+                  <p class="brief-hero__desc">
+                    {metaDescription}
+                  </p>
+                  <div class="brief-hero__meta">
+                    <span>📅 {formatDate(date)}</span>
+                    <span>📊 {newsCount || 0} 条摘要</span>
+                    <span>⏱ {readTime} 分钟</span>
+                    <span>状态：{briefStatusLabel}</span>
+                  </div>
+                </div>
+                <div class="brief-hero__panel">
+                  <div class="brief-hero__panel-title">中文摘要</div>
+                  <p>{metaDescription}</p>
+                  <div class="brief-hero__panel-note">
+                    内容来自多站采集，按早报 / 晚报整理。
+                  </div>
+                </div>
               </div>
+            ) : (
+              <>
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.8rem;
+                  line-height: 1.4;">
+                  {title}
+                </h1>
+
+                <div style="color: var(--color-text-light); font-size: 0.9rem;
+                  display: flex; align-items: center; justify-content: center;
+                  gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                  <span>📅 {formatDate(date)}</span>
+                  {
+                    category && (
+                      <span>📂 {category}</span>
+                    )
+                  }
+                  <span>⏱ 阅读约 {readTime} 分钟</span>
+                </div>
+
+                {
+                  tags.length > 0 && (
+                    <div style="display: flex; justify-content: center; margin-top: 0.5rem;">
+                      <TagList tags={tags} />
+                    </div>
+                  )
+                }
+              </>
             )
           }
         </header>
 
         <!-- 文章正文 -->
-        <div class="article-content">
+        <div class={`article-content ${isAiBrief ? 'article-content--brief' : ''}`}>
           <slot />
         </div>
 
@@ -155,3 +198,113 @@ const fullTitle = `${title} - ${siteConfig.title}`;
     });
   }
 </script>
+
+<style>
+  .article-hero {
+    text-align: center;
+  }
+
+  .brief-hero {
+    padding: 1.1rem 1rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .brief-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+    gap: var(--spacing-md);
+    align-items: start;
+  }
+
+  .brief-hero__eyebrow {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .brief-hero__main h1 {
+    font-size: 1.9rem;
+    line-height: 1.35;
+    margin-bottom: 0.7rem;
+    text-align: left;
+  }
+
+  .brief-hero__desc {
+    font-size: 0.98rem;
+    color: var(--color-text-light);
+    line-height: 1.75;
+    margin-bottom: 0.9rem;
+  }
+
+  .brief-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.8rem;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+  }
+
+  .brief-hero__panel {
+    padding: 0.95rem;
+    background: var(--color-primary-light);
+    border-radius: 8px;
+    border: 1px solid #d6f5df;
+  }
+
+  .brief-hero__panel-title {
+    font-size: 0.8rem;
+    color: var(--color-primary-hover);
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+  }
+
+  .brief-hero__panel p {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .brief-hero__panel-note {
+    margin-top: 0.65rem;
+    font-size: 0.78rem;
+    color: var(--color-text-light);
+  }
+
+  .article-content--brief {
+    max-width: 860px;
+  }
+
+  .article-content--brief h2 {
+    background: #f8fafc;
+    padding: 0.7rem 0.85rem;
+    border-left: 4px solid var(--color-primary);
+    border-bottom: none;
+    border-radius: 8px;
+  }
+
+  .article-content--brief h3 {
+    margin-top: 1.2rem;
+  }
+
+  .article-content--brief ul,
+  .article-content--brief ol {
+    padding-left: 1.2rem;
+  }
+
+  .article-content--brief li {
+    margin-bottom: 0.55rem;
+  }
+
+  @media (max-width: 760px) {
+    .brief-hero__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .brief-hero__main h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

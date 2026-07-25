@@ -20,6 +20,12 @@ status: "published"
 - 本轮共采集 12 条来自一手来源的资讯。
 - 3 个栏目有新增内容，3 个栏目无新增。
 
+## 中文摘要
+
+- Anthropic 围绕 Claude Sonnet 5、教师场景和科学研究资助继续扩展产品与生态。
+- OpenAI 更新 ChatGPT 小型企业计划，并处理与 Hugging Face 相关的模型评测安全事件。
+- 本期内容以模型发布、研究投入和企业落地为主。
+
 ## 二、今日值得关注
 
 1. Inviting hard questionsAnnouncementsJul 9, 2026We’re asking the public for their hardest questions about AI, and committing to show our work as we address them.

@@ -19,6 +19,12 @@ status: "published"
 - 汇总截至北京时间 晚上 20:00 前最近一轮可直接核实的 AI 行业动态。
 - 本轮共采集 36 条来自一手来源的资讯。
 
+## 中文摘要
+
+- 英伟达发布 RTX Spark 与 Vera Rubin 平台，算力硬件更新是这一期的重点。
+- Microsoft Agent Framework、Claude Code、Skills 标准和多种 Agent 工具链同步推进。
+- 国内 AI 行业继续围绕大模型、算力和资本动作快速演进。
+
 ## 二、今日值得关注
 
 1. NVIDIA发布RTX Spark AI超级芯片，面向个人PC的Blackwell架构SoC
